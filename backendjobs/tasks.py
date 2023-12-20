@@ -50,46 +50,46 @@ def daily_reminder_to_user():
 @celery.task()
 def monthly_entertainment_report_to_users():
     users=User.query.all()
-    error=True
     for user in users:
-        with mail.connect() as conn:
-            subject= "Grocery App V2 Monthly Report"
-            template =Template( """
-                    <div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
-                        <h1 style="color: #007bff;">Order Report</h1>
-                        <p>Dear {{ name }},</p>
-                        <p>Here is the order report for the specified date range.</p>
+        if user.role=='user':
+            with mail.connect() as conn:
+                subject= "Grocery App V2 Monthly Report"
+                template =Template( """
+                        <div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
+                            <h1 style="color: #007bff;">Order Report</h1>
+                            <p>Dear {{ name }},</p>
+                            <p>Here is the order report for the specified date range.</p>
 
-                        <!-- Add your report content here -->
-                        <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
-                            <thead>
-                                <tr style="background-color: #007bff; color: #fff;">
-                                    <th style="padding: 10px; text-align: left;">Product Name</th>
-                                    <th style="padding: 10px; text-align: left;">Quantity</th>
-                                    <th style="padding: 10px; text-align: left;">Total</th>
-                                    <th style="padding: 10px; text-align: left;">Order Date</th>
-                                </tr>
-                            </thead>
-                            <tbody>
-                                {% for order in orders %}
-                                <tr>
-                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ order.product_name }}</td>
-                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ order.quantity }}</td>
-                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">${{ order.total }}</td>
-                                    <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ order.order_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
-                                </tr>
-                                {% endfor %}
-                            </tbody>
-                        </table>
+                            <!-- Add your report content here -->
+                            <table style="width: 100%; border-collapse: collapse; margin-top: 20px;">
+                                <thead>
+                                    <tr style="background-color: #007bff; color: #fff;">
+                                        <th style="padding: 10px; text-align: left;">Product Name</th>
+                                        <th style="padding: 10px; text-align: left;">Quantity</th>
+                                        <th style="padding: 10px; text-align: left;">Total</th>
+                                        <th style="padding: 10px; text-align: left;">Order Date</th>
+                                    </tr>
+                                </thead>
+                                <tbody>
+                                    {% for order in orders %}
+                                    <tr>
+                                        <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ order.product_name }}</td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ order.quantity }}</td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #ddd;">${{ order.total }}</td>
+                                        <td style="padding: 10px; border-bottom: 1px solid #ddd;">{{ order.order_date.strftime('%Y-%m-%d %H:%M:%S') }}</td>
+                                    </tr>
+                                    {% endfor %}
+                                </tbody>
+                            </table>
 
-                        <p>If you have any questions or need further details, please don't hesitate to contact us.</p>
-                        <p>Thank you for your attention!</p>
-                        <p>Best regards,<br>Eat Fresh</p>
-                    </div>
-                    """)
-            message = template.render(name=user.name, orders = user.purchased )
-            msg = Message(recipients=[user.email],html=message, subject=subject)
-            conn.send(msg)
+                            <p>If you have any questions or need further details, please don't hesitate to contact us.</p>
+                            <p>Thank you for your attention!</p>
+                            <p>Best regards,<br>Eat Fresh</p>
+                        </div>
+                        """)
+                message = template.render(name=user.name, orders = user.purchased )
+                msg = Message(recipients=[user.email],html=message, subject=subject)
+                conn.send(msg)
     return {"status": "success"}
         
 celery.conf.beat_schedule = {
@@ -102,7 +102,7 @@ celery.conf.beat_schedule = {
         'schedule': crontab(hour=21, minute=0),  # Sending email and notification for inactive users
     },
     'my_quick_check_task': {
-        'task': "backendjobs.tasks.daily_reminder_to_user",
+        'task': "backendjobs.tasks.monthly_entertainment_report_to_users",
         'schedule': crontab(minute='*/1'),  # Sending email and notification for inactive users
     },
 }

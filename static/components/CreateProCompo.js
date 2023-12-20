@@ -31,7 +31,8 @@ const CreateProCompo = Vue.component('CreateProCompo', {
         <label class="form-label" for="description">description:</label>
         <textarea class="form-control" v-model="product.description" type="text" id="description" name="description" required></textarea>
         <br>
-        <select class="form-select" name="Select Category"
+        <label class="form-label" for="Select Category">Select Category:</label>
+        <select class="form-select" name="Select Category" id="Select Category"
             v-model="product.category_id" required>
             <option v-for="category in this.$store.state.categories" :key="category.id" :value="category.id">{{category.name}}</option>
         </select>        

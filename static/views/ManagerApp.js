@@ -61,7 +61,7 @@ const ManagerApp = Vue.component('ManagerApp', {
         </div>
         <ul class="list-group">
             <li class="list-group-item" v-for="category in this.$store.state.categories" :key="category.id">
-                <input class="form-check-input me-1" type="radio" :name="category.name" :value="category.id" :id="category.id" checked>
+                <input @click="searchByCat(category.name, category.id)" class="form-check-input me-1 pointer-on-hover" type="radio" :name="category.name" :value="category.id" :id="category.id" :checked="checkedValue === category.id">
                 <label class="form-check-label" :for="category.id">{{ category.name }}</label>
                 <a class="pointer-on-hover" @click="editCat(category.id)">edit</a>
             </li>
@@ -80,13 +80,39 @@ const ManagerApp = Vue.component('ManagerApp', {
             cartItemsCount: 3,
             picUpdate:false,
             profilePic:null,
-            query:''  // Replace this with the actual count of items in your shopping cart
+            query:'',
+            checkedValue:-1  // Replace this with the actual count of items in your shopping cart
         };
     },
     methods: {
         handleFileUpload(event) {
             this.profilePic = event.target.files[0];
-        },        
+        },
+        async searchByCat(catName, catId) {
+            this.checkedValue=catId;
+            try {
+                const response = await fetch('http://127.0.0.1:5000/search/for',{
+                  method: 'POST',
+                  headers: {
+                    'Authentication-Token': sessionStorage.getItem('auth_token'),
+                    'Content-type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                      "query": catName
+                    }),
+                });
+                if (response.status === 200) {
+                  const data = await response.json();
+                  this.$store.commit('setProducts', data.pro)
+                  console.log(data.resource)
+              } else {
+                  const data = await response.json();
+                  alert(data.message);
+                }
+              } catch (error) {
+                console.error(error);
+              }
+        },                
         home(){
             if(this.$route.path!='/manager'){
                 this.$router.push('/manager')

@@ -31,6 +31,7 @@ const EditProCompo = Vue.component('EditProCompo', {
         <label class="form-label" for="rpu">Rate Per Unit:</label>
         <input class="form-control" v-model="product.rpu" type="number" id="rpu" name="rpu" step="0.01" required>
         <br>
+        <label class="form-label" for="Select Category">Select Category:</label>
         <select class="form-select" name="Select Category"
             v-model="product.category_id" required>
             <option v-for="category in this.$store.state.categories" :key="category.id" :value="category.id">{{category.name}}</option>

@@ -17,7 +17,7 @@ const UserApp = Vue.component('UserApp', {
                         <a class="nav-link pointer-on-hover" @click="orders">Your Orders</a>
                     </li>
                     <li class="nav-item">
-                        <a class="nav-link pointer-on-hover" >Refer</a>
+                        <a class="nav-link pointer-on-hover" @click="shareViaWhatsApp" >Refer</a>
                     </li>
                     <li class="nav-item">
                         <a class="nav-link pointer-on-hover" @click="logout">logout</a>
@@ -59,11 +59,10 @@ const UserApp = Vue.component('UserApp', {
         </div>
         <ul class="list-group">
             <li class="list-group-item" v-for="category in this.$store.state.categories" :key="category.id">
-                <input class="form-check-input me-1" type="radio" :name="category.name" :value="category.id" :id="category.id" checked>
+                <input @click="searchByCat(category.name, category.id)" class="form-check-input me-1 pointer-on-hover" type="radio" :name="category.name" :value="category.id" :id="category.id" :checked="checkedValue === category.id" >
                 <label class="form-check-label" :for="category.id">{{ category.name }}</label>
             </li>
         </ul>
-        <!-- Add any sidebar content here -->
     </div>
     <router-view></router-view>
 </main>
@@ -77,13 +76,14 @@ const UserApp = Vue.component('UserApp', {
             cartItemsCount: 3,
             picUpdate:false,
             profilePic:null,            
-            query:''  // Replace this with the actual count of items in your shopping cart
+            query:'', // Replace this with the actual count of items in your shopping cart,
+            checkedValue:-1
         };
     },
     methods: {
         handleFileUpload(event) {
             this.profilePic = event.target.files[0];
-        },        
+        },               
         home(){
             if(this.$route.path!='/user'){
                 this.$router.push('/user')
@@ -136,6 +136,44 @@ const UserApp = Vue.component('UserApp', {
                 this.$router.push('/user/report')
             }
         },
+        async searchByCat(catName, catId) {
+            this.checkedValue=catId;
+            try {
+                const response = await fetch('http://127.0.0.1:5000/search/for',{
+                  method: 'POST',
+                  headers: {
+                    'Authentication-Token': sessionStorage.getItem('auth_token'),
+                    'Content-type': 'application/json'
+                  },
+                  body: JSON.stringify({
+                      "query": catName
+                    }),
+                });
+                if (response.status === 200) {
+                  const data = await response.json();
+                  this.$store.commit('setProducts', data.pro)
+                  console.log(data.resource)
+              } else {
+                  const data = await response.json();
+                  alert(data.message);
+                }
+              } catch (error) {
+                console.error(error);
+              }
+        },
+        shareViaWhatsApp() {
+            // Replace 'your_share_message' with the message you want to share
+            const message = encodeURIComponent('Check out this amazing app! Join now.');
+      
+            // Replace 'your_web_url' with the URL of your web application
+            const url = encodeURIComponent('http://127.0.0.1:5000/');
+      
+            // Construct the WhatsApp share URL
+            const whatsappUrl = `https://api.whatsapp.com/send?text=${message}%20${url}`;
+      
+            // Open a new window with the WhatsApp share URL
+            window.open(whatsappUrl, '_blank');
+          },        
         async search() {
             try {
               const response = await fetch('http://127.0.0.1:5000/search/for',{
