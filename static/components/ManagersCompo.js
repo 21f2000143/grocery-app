@@ -17,7 +17,7 @@ const ManagersCompo = Vue.component('ManagersCompo', {
                 <!-- Action Buttons -->
                 <div class="action-buttons">
                     <button class="btn btn-danger" @click="deletemanager(item.id)">Delete</button>
-                    <button class="btn btn-warning">Send Warning</button>
+                    <button class="btn btn-warning" @click="warn">Send Warning</button>
                 </div>
             </div>
             <div v-if="this.$store.state.managers.length==0">
@@ -37,9 +37,9 @@ const ManagersCompo = Vue.component('ManagersCompo', {
     }
   },
   methods: {
-    closeCard(){
-      if(this.$route.path!='/'){
-        this.$router.push('/')
+    warn(){
+      if(this.$route.path!='/admin/warning'){
+        this.$router.push('/admin/warning')
       }
     },
     submitForm() {
@@ -80,7 +80,7 @@ const ManagersCompo = Vue.component('ManagersCompo', {
           const response = await fetch('http://127.0.0.1:5000/delete/man/'+id,{
             method: 'DELETE',
             headers: {
-              'Authentication-Token': sessionStorage.getItem('auth_token'),
+              
               'Content-Type': 'application/json',
             },
           });

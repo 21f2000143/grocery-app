@@ -149,7 +149,7 @@ const store = new Vuex.Store({
       const response = await fetch('http://127.0.0.1:5000/get/orders', {
         method: 'GET',
         headers: {
-          'Authentication-Token': sessionStorage.getItem('auth_token'),
+          
         },
       });
       if (response.status === 200) {
@@ -169,7 +169,7 @@ const store = new Vuex.Store({
       const response = await fetch('http://127.0.0.1:5000/get/cart/items', {
         method: 'GET',
         headers: {
-          'Authentication-Token': sessionStorage.getItem('auth_token'),
+          
         },
       });
       if (response.status === 200) {
@@ -189,7 +189,7 @@ const store = new Vuex.Store({
       const response = await fetch('http://127.0.0.1:5000/get/products', {
         method: 'GET',
         headers: {
-          'Authentication-Token': sessionStorage.getItem('auth_token'),
+          
         },
       });
       if (response.status === 200) {
@@ -209,7 +209,7 @@ const store = new Vuex.Store({
       const response = await fetch('http://127.0.0.1:5000/auth/user', {
         method: 'GET',
         headers: {
-          'Authentication-Token': sessionStorage.getItem('auth_token'),
+          
         },
       });
       if (response.status === 200) {
@@ -229,7 +229,7 @@ const store = new Vuex.Store({
       const response = await fetch('http://127.0.0.1:5000/get/all/managers', {
         method: 'GET',
         headers: {
-          'Authentication-Token': sessionStorage.getItem('auth_token'),
+          
         },
       });
       if (response.status === 200) {
@@ -249,7 +249,7 @@ const store = new Vuex.Store({
       const response = await fetch('http://127.0.0.1:5000/get/all/noti', {
         method: 'GET',
         headers: {
-          'Authentication-Token': sessionStorage.getItem('auth_token'),
+          
         },
       });
       if (response.status === 200) {
@@ -269,7 +269,7 @@ const store = new Vuex.Store({
       const response = await fetch('http://127.0.0.1:5000/get/categories', {
         method: 'GET',
         headers: {
-          'Authentication-Token': sessionStorage.getItem('auth_token'),
+          
           'Content-Type': 'application/json',
         },
       });

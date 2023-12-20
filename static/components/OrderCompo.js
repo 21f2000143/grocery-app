@@ -17,6 +17,9 @@ const OrderCompo = Vue.component('OrderCompo', {
             </div>
           </div>
       </div>
+      <div v-if="this.$store.state.orders.length == 0" class="col-md-12">
+        <h5>No Orders Found</h5>
+      </div>
   </div>
 </div>
     `,
@@ -39,7 +42,7 @@ const OrderCompo = Vue.component('OrderCompo', {
           const response = await fetch('http://127.0.0.1:5000/update/order/'+id, {
             method: 'PUT',
             headers: {
-              'Authentication-Token': sessionStorage.getItem('auth_token'),
+              
               'Content-Type': 'Application/json'
             },
             body: JSON.stringify({

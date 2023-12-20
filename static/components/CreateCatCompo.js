@@ -46,7 +46,7 @@ const CreateCatCompo = Vue.component('CreateCatCompo', {
         const response = await fetch('http://127.0.0.1:5000/add/cat',{
           method: 'POST',
           headers: {
-            'Authentication-Token': sessionStorage.getItem('auth_token'),
+            
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({

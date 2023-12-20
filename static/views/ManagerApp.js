@@ -94,7 +94,7 @@ const ManagerApp = Vue.component('ManagerApp', {
                 const response = await fetch('http://127.0.0.1:5000/search/for',{
                   method: 'POST',
                   headers: {
-                    'Authentication-Token': sessionStorage.getItem('auth_token'),
+                    
                     'Content-type': 'application/json'
                   },
                   body: JSON.stringify({
@@ -148,7 +148,7 @@ const ManagerApp = Vue.component('ManagerApp', {
               const response = await fetch('http://127.0.0.1:5000/logout', {
                 method: 'GET',
                 headers: {
-                  'Authentication-Token': sessionStorage.getItem('auth_token'),
+                  
                 },
               });
               if (response.status === 200) {
@@ -175,7 +175,7 @@ const ManagerApp = Vue.component('ManagerApp', {
               const response = await fetch('http://127.0.0.1:5000/search/for',{
                 method: 'POST',
                 headers: {
-                  'Authentication-Token': sessionStorage.getItem('auth_token'),
+                  
                   'Content-type': 'application/json'
                 },
                 body: JSON.stringify({
@@ -202,7 +202,7 @@ const ManagerApp = Vue.component('ManagerApp', {
               const response = await fetch('http://127.0.0.1:5000/update/profile/'+this.$store.state.authenticatedUser.id,{
                 method: 'PUT',
                 headers: {
-                  'Authentication-Token': sessionStorage.getItem('auth_token'),
+                  
                 },
                 body: formData,
               });
@@ -220,6 +220,11 @@ const ManagerApp = Vue.component('ManagerApp', {
           }        
     },
     mounted(){
+        const source = new EventSource("/stream");
+        source.addEventListener('notifymanager', event => {
+          let data = JSON.parse(event.data);
+          alert(data.message)
+        }, false);
         this.$store.dispatch('fetchCategories')
         this.$store.dispatch('fetchAuthUser')
         this.$store.dispatch('fetchNoti')

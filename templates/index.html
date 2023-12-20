@@ -158,6 +158,7 @@
     import ReportCompo from "../static/components/ReportCompo.js";
     import CartCompo from "../static/components/CartCompo.js";
     import OrderCompo from "../static/components/OrderCompo.js";
+    import sendWarning from "../static/components/sendWarning.js";
     
     const routes = [
       { path: '/', component: HomeView},
@@ -172,7 +173,8 @@
         {path:'/admin/pro/edit/:id', component: EditProCompo},
         {path:'/admin/managers', component: ManagersCompo},
         {path:'/admin/notifications', component: NotifiCompo},
-        {path:'/admin/report', component: ReportCompo}
+        {path:'/admin/report', component: ReportCompo},
+        {path:'/admin/warning', component: sendWarning}
       ]},
       { path: '/manager', component: ManagerApp, children:[
         {path:'/manager', component: ProductCompo},

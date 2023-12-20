@@ -3,6 +3,7 @@ from database import *
 from datetime import datetime
 from backendjobs import workers
 from flask_sse import sse
+from flask_caching import Cache
 import base64
 from werkzeug.security import generate_password_hash, check_password_hash
 from flask_login import LoginManager, login_user, login_required, current_user, logout_user
@@ -57,6 +58,8 @@ celery.conf.timezone = 'Asia/Kolkata'
 
 celery.Task = workers.ContextTask
 app.app_context().push()
+cache=Cache(app)
+app.app_context().push()
 
 app.register_blueprint(sse, url_prefix='/stream')
 
@@ -109,6 +112,7 @@ def search():
 def index():
     return render_template('index.html')
 
+@cache.cached(timeout=50, key_prefix="get_products")
 @app.route('/get/products', methods=['GET'])
 def get_products():
     try:
@@ -131,7 +135,7 @@ def get_products():
     except Exception as e:
         return jsonify({'error': str(e)})
 
-    
+@cache.cached(timeout=50, key_prefix="get_category")    
 @app.route('/get/categories', methods=['GET'])
 def get_categories():
     try:

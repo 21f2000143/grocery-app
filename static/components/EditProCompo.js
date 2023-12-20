@@ -99,7 +99,7 @@ const EditProCompo = Vue.component('EditProCompo', {
         const response = await fetch('http://127.0.0.1:5000/update/product/'+this.$route.params.id,{
           method: 'GET',
           headers: {
-            'Authentication-Token': sessionStorage.getItem('auth_token'),
+            
           }
         });
         if (response.status === 200) {
@@ -128,7 +128,7 @@ const EditProCompo = Vue.component('EditProCompo', {
           const response = await fetch('http://127.0.0.1:5000/update/product/'+this.$route.params.id,{
             method: 'PUT',
             headers: {
-              'Authentication-Token': sessionStorage.getItem('auth_token'),
+              
             },
             body: formData,
           });
@@ -157,7 +157,7 @@ const EditProCompo = Vue.component('EditProCompo', {
           const response = await fetch('http://127.0.0.1:5000/update/product/'+this.$route.params.id,{
             method: 'DELETE',
             headers: {
-              'Authentication-Token': sessionStorage.getItem('auth_token'),
+              
             },
           });
           if (response.status === 201) {

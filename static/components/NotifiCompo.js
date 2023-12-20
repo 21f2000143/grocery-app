@@ -30,7 +30,7 @@ const NotifiCompo = Vue.component('NotifiCompo', {
         const response = await fetch('http://127.0.0.1:5000/decline/'+id, {
           method: 'GET',
           headers: {
-            'Authentication-Token': sessionStorage.getItem('auth_token'),
+            
           },
         });
         if (response.status === 200) {
@@ -50,7 +50,7 @@ const NotifiCompo = Vue.component('NotifiCompo', {
         const response = await fetch('http://127.0.0.1:5000/approve/'+id, {
           method: 'GET',
           headers: {
-            'Authentication-Token': sessionStorage.getItem('auth_token'),
+            
           },
         });
         if (response.status === 201) {

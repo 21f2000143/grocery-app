@@ -1,5 +1,5 @@
 from flask import current_app as app
-from flask import make_response
+from flask import make_response, request
 import csv
 import io
 from backendjobs.tasks import user_triggered_async_job
@@ -190,3 +190,27 @@ def approve(id):
             return jsonify({'message': f"Product {product.name} deleted successfully from the database", 'resource':data[0]}), 200            
     else:
         return jsonify({'message': 'Not found'}), 404
+    
+@app.route('/send/alert', methods=['GET', 'POST'])
+def send_alert():
+    if request.method=='GET':
+        managers = User.query.filter_by(role='manager').all()
+        man_list=[]
+        for man in managers:
+            man_data = {
+                'id': man.id,
+                'name': man.name,
+                'email': man.email,
+            }
+            man_list.append(man_data)       
+        return jsonify(man_list), 200
+    if request.method=='POST':
+        data = request.get_json()
+        print(data, 'for sending alert')
+        with mail.connect() as conn:
+            subject = "Alert from Admin"
+            message = data['message']
+            msg = Message(recipients=[data['email']], html=message, subject=subject)
+            conn.send(msg)
+
+            return jsonify({'message': "sent"}), 200                      

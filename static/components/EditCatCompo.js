@@ -49,7 +49,7 @@ const EditCatCompo = Vue.component('EditCatCompo', {
         const response = await fetch('http://127.0.0.1:5000/update/'+this.$route.params.id,{
           method: 'GET',
           headers: {
-            'Authentication-Token': sessionStorage.getItem('auth_token'),
+            
             'Content-Type': 'application/json',
           }
         });
@@ -69,7 +69,7 @@ const EditCatCompo = Vue.component('EditCatCompo', {
           const response = await fetch('http://127.0.0.1:5000/update/'+this.$route.params.id,{
             method: 'PUT',
             headers: {
-              'Authentication-Token': sessionStorage.getItem('auth_token'),
+              
               'Content-Type': 'application/json',
             },
             body: JSON.stringify({
@@ -101,7 +101,7 @@ const EditCatCompo = Vue.component('EditCatCompo', {
           const response = await fetch('http://127.0.0.1:5000/update/'+this.$route.params.id,{
             method: 'DELETE',
             headers: {
-              'Authentication-Token': sessionStorage.getItem('auth_token'),
+              
               'Content-Type': 'application/json',
             },
           });

@@ -41,7 +41,7 @@ const HomeView = Vue.component('HomeView', {
           const response = await fetch('http://127.0.0.1:5000/auth/user', {
             method: 'GET',
             headers: {
-              'Authentication-Token': sessionStorage.getItem('auth_token'),
+              
             },
           });
           if (response.status === 200) {

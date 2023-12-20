@@ -106,7 +106,7 @@ const CreateProCompo = Vue.component('CreateProCompo', {
         const response = await fetch('http://127.0.0.1:5000/add/product',{
           method: 'POST',
           headers: {
-            'Authentication-Token': sessionStorage.getItem('auth_token'),
+            
           },
           body: formData,
         });

@@ -53,7 +53,7 @@ const CartCompo = Vue.component('CartCompo', {
           const response = await fetch('http://127.0.0.1:5000/cart/item/increment/'+id,{
             method: 'PUT',
             headers: {
-              'Authentication-Token': sessionStorage.getItem('auth_token'),
+              
               'Content-Type': 'application/json',
             }
           });
@@ -75,7 +75,7 @@ const CartCompo = Vue.component('CartCompo', {
           const response = await fetch('http://127.0.0.1:5000/cart/item/decrement/'+id,{
             method: 'PUT',
             headers: {
-              'Authentication-Token': sessionStorage.getItem('auth_token'),
+              
               'Content-Type': 'application/json',
             }
           });
@@ -100,7 +100,7 @@ const CartCompo = Vue.component('CartCompo', {
           const response = await fetch('http://127.0.0.1:5000/cart/item/remove/'+id,{
             method: 'DELETE',
             headers: {
-              'Authentication-Token': sessionStorage.getItem('auth_token'),
+              
               'Content-Type': 'application/json',
             }
           });
@@ -122,7 +122,7 @@ const CartCompo = Vue.component('CartCompo', {
           const response = await fetch('http://127.0.0.1:5000/cart/items/buy',{
             method: 'GET',
             headers: {
-              'Authentication-Token': sessionStorage.getItem('auth_token'),
+              
               'Content-Type': 'application/json',
             }
           });

@@ -42,7 +42,7 @@ def daily_reminder_to_user():
                         """
                 msg = Message(recipients=[user.email],html=message, subject=subject)
                 conn.send(msg)
-    sse.publish({"message": "You have not booked any order, please book now!", "color":"alert alert-primary" },type='notifyuser')
+            sse.publish({"message": "You have not placed any order, please place now!", "color":"alert alert-primary" },type=user.email)
     print('daily remider to users executed')
     return {"status": "success"}
 
@@ -90,6 +90,8 @@ def monthly_entertainment_report_to_users():
                 message = template.render(name=user.name, orders = user.purchased )
                 msg = Message(recipients=[user.email],html=message, subject=subject)
                 conn.send(msg)
+    sse.publish({"message": "Monthly Report sent"},type='notifyadmin')
+    sse.publish({"message": "Monthly Report sent"},type='notifymanager')
     return {"status": "success"}
         
 celery.conf.beat_schedule = {
