@@ -91,7 +91,7 @@ const ManagerApp = Vue.component('ManagerApp', {
         async searchByCat(catName, catId) {
             this.checkedValue=catId;
             try {
-                const response = await fetch('http://127.0.0.1:5000/search/for',{
+                const response = await fetch('http://127.0.0.1:5000/search/by/catgory',{
                   method: 'POST',
                   headers: {
                     
@@ -189,7 +189,7 @@ const ManagerApp = Vue.component('ManagerApp', {
                 console.log(data.resource)
             } else {
                 const data = await response.json();
-                alert(data.message);
+                alert( data.message);
               }
             } catch (error) {
               console.error(error);

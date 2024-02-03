@@ -104,7 +104,7 @@ celery.conf.beat_schedule = {
         'schedule': crontab(hour=21, minute=0),  # Sending email and notification for inactive users
     },
     'my_quick_check_task': {
-        'task': "backendjobs.tasks.monthly_entertainment_report_to_users",
+        'task': "backendjobs.tasks.daily_reminder_to_user",
         'schedule': crontab(minute='*/1'),  # Sending email and notification for inactive users
     },
 }

@@ -66,6 +66,50 @@ app.register_blueprint(sse, url_prefix='/stream')
 #---------------------- All operational endpoints --------------#
 main = Blueprint('main', __name__)
 
+@app.route('/search/by/catgory', methods=['POST'])
+def searchByCategory():
+    # Get the search query parameters from the request
+    data = request.get_json()
+    query = data.get('query')
+    print(query, "printed query word")
+
+    # Search for products and categories based on the query
+    products = Product.query.filter(or_(
+        Product.name.ilike(f'%{query}%'),
+        Product.rpu.ilike(f'%{query}%'),
+        Product.manufacture.ilike(f'%{query}%'),
+        Product.description.ilike(f'%{query}%'),
+        Product.expiry.ilike(f'%{query}%'),
+        Product.category.has(Category.name.ilike(f'%{query}%'))
+    )).all()
+    category = Category.query.filter_by(name=query).first()
+    products = Product.query.filter_by(category_id=category.id).all() 
+    product_list = []
+    categories=[]
+    for new_product in products:
+        prod_data = {
+            'id': new_product.id,
+            'quantity': new_product.quantity,
+            'name': new_product.name,
+            'manufacture': new_product.manufacture,
+            'expiry': new_product.expiry,
+            'description': new_product.description,
+            'rpu': new_product.rpu,
+            'unit': new_product.unit,
+            'image': base64.b64encode(new_product.image).decode('utf-8')  # Assuming image is stored as a base64-encoded string
+        }
+        if new_product.category not in categories:
+            categories.append(new_product.category)
+        product_list.append(prod_data)
+    categories_list = []
+    for category in categories:
+        cat = {
+            'id': category.id,
+            'name': category.name,
+        }
+        categories_list.append(cat)
+    return jsonify({"cat":categories_list, 'pro':product_list}), 200
+
 @app.route('/search/for', methods=['POST'])
 def search():
     # Get the search query parameters from the request

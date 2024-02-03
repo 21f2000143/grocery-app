@@ -104,7 +104,7 @@ const AdminApp = Vue.component('AdminApp', {
         async searchByCat(catName, catId) {
             this.checkedValue=catId;
             try {
-                const response = await fetch('http://127.0.0.1:5000/search/for',{
+                const response = await fetch('http://127.0.0.1:5000/search/by/catgory',{
                   method: 'POST',
                   headers: {
                     
@@ -229,7 +229,7 @@ const AdminApp = Vue.component('AdminApp', {
     },
     mounted(){
         const source = new EventSource("/stream");
-        source.addEventListener('notifyadmin'.email, event => {
+        source.addEventListener('notifyadmin', event => {
           let data = JSON.parse(event.data);
           alert(data.message)
         }, false);

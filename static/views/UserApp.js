@@ -139,7 +139,7 @@ const UserApp = Vue.component('UserApp', {
         async searchByCat(catName, catId) {
             this.checkedValue=catId;
             try {
-                const response = await fetch('http://127.0.0.1:5000/search/for',{
+                const response = await fetch('http://127.0.0.1:5000/search/by/catgory',{
                   method: 'POST',
                   headers: {
                     
