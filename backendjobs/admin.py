@@ -1,27 +1,37 @@
-from flask import current_app as app
-from flask import make_response, request
 import csv
 import io
 from backendjobs.tasks import user_triggered_async_job
-from flask import jsonify
-from database import *
+from database import (
+    db,
+    User,
+    Category,
+    Product,
+    Cart,
+    RequestResponse
+)
+from flask import (
+    Blueprint,
+    make_response,
+    request,
+    jsonify
+)
 from datetime import datetime
-from backendjobs import workers
-from flask_sse import sse
 import base64
 from werkzeug.security import generate_password_hash
-from backendjobs.send_mail import init_mail
+from backendjobs.send_mail import mail_factory
 from flask_mail import Message
 
-mail = init_mail()
+admin_bp = Blueprint('admin_bp', __name__)
 
-@app.route('/get/report/data', methods=['GET'])
+
+@admin_bp.route('/get/report/data', methods=['GET'])
 def get_report():
     job = user_triggered_async_job.delay()
-    result=job.get()
+    result = job.get()
     return result, 200
 
-@app.route('/get/report/download', methods=['GET'])
+
+@admin_bp.route('/get/report/download', methods=['GET'])
 def download_report():
     with open('product_report.csv', 'r') as file:
         csv_reader = csv.reader(file)
@@ -29,32 +39,43 @@ def download_report():
         csv_buffer = io.StringIO()
         csv_writer = csv.writer(csv_buffer)
         csv_writer.writerows(csv_data)
-        print(csv_buffer.getvalue())
     response = make_response(csv_buffer.getvalue())
     response.headers['Content-Disposition'] = 'attachment; filename=report.csv'
     response.headers['Content-Type'] = 'text/csv'
     return response
 
-@app.route('/approve/<int:id>', methods=['GET'])
+
+@admin_bp.route('/approve/<int:id>', methods=['GET'])
 def approve(id):
     req = RequestResponse.query.filter_by(id=id).first()
     if req:
-        if req.type=='manager':
+        if req.type == 'manager':
             data = req.message.split(',')
-            new_user = User(email=data[0], name=data[1], role=data[2], password=generate_password_hash(data[3],method='scrypt'), doj=req.timestamp)
+            new_user = User(
+                email=data[0],
+                name=data[1],
+                role=data[2],
+                password=generate_password_hash(
+                    data[3], method='scrypt'),
+                doj=req.timestamp)
             db.session.add(new_user)
             db.session.commit()
+            yex = (datetime.now() - new_user.doj).total_seconds() / 31557600
             man_data = {
                 'id': new_user.id,
                 'role': new_user.role,
                 'name': new_user.name,
                 'email': new_user.email,
                 'doj': new_user.doj.strftime('%Y-%m-%d'),
-                'exp': f"{(datetime.now() - new_user.doj).total_seconds() / (365.25 * 24 * 3600):.2f} years of experience",
-                'image': base64.b64encode(new_user.image).decode('utf-8') if new_user.image else None # Assuming image is stored as a base64-encoded string
+                'exp': f"{yex:.2f} years of experience",
+                # Assuming image is stored as a base64-encoded string
+                'image': (base64.b64encode(new_user.image).decode('utf-8')
+                          if new_user.image else None)
             }
-            req.status='approved'
+            req.status = 'approved'
             db.session.commit()
+            from flask import current_app as app
+            mail = mail_factory(app)
             with mail.connect() as conn:
                 subject = "Manager Role Application Approved"
                 message = """
@@ -68,31 +89,37 @@ def approve(id):
                         <p>Best regards,<br>Your Company Name</p>
                     </div>
                 """
-                msg = Message(recipients=[new_user.email], html=message, subject=subject)
+                msg = Message(recipients=[new_user.email],
+                              html=message, subject=subject)
                 conn.send(msg)
 
-            return jsonify({'message': "Approved",'resource': man_data,'type':req.type}), 201                       
-        elif req.type=='category':
+            return jsonify({
+                'message': "Approved",
+                'resource': man_data,
+                'type': req.type}), 201
+        elif req.type == 'category':
             data = req.message.split(',')
-            category=Category(name=data[0])
+            category = Category(name=data[0])
             db.session.add(category)
             db.session.commit()
-            req.status='approved'
-            db.session.commit()            
-            return jsonify({'message':f"Category {data[0]} created successfully",
-                            'resource':{'id':category.id,'name':category.name}}), 201
-        elif req.type=='category update':
-            data = req.message.split(',')
-            category=Category.query.filter_by(id=int(data[0])).first()
-            category.name=data[1]
+            req.status = 'approved'
             db.session.commit()
-            req.status='approved'
-            db.session.commit()            
-            return jsonify({'message':f"Category {data[1]} created successfully",
-                            'resource':{'id':category.id,'name':category.name}}), 201
-        elif req.type=='category delete':
+            return jsonify({
+                'message': f"Category {data[0]} created successfully",
+                'resource': {'id': category.id, 'name': category.name}}), 201
+        elif req.type == 'category update':
             data = req.message.split(',')
-            category=Category.query.filter_by(id=int(data[0])).first()
+            category = Category.query.filter_by(id=int(data[0])).first()
+            category.name = data[1]
+            db.session.commit()
+            req.status = 'approved'
+            db.session.commit()
+            return jsonify({
+                'message': f"Category {data[1]} created successfully",
+                'resource': {'id': category.id, 'name': category.name}}), 201
+        elif req.type == 'category delete':
+            data = req.message.split(',')
+            category = Category.query.filter_by(id=int(data[0])).first()
             products = Product.query.filter_by(category_id=int(data[0])).all()
             for product in products:
                 carts = Cart.query.filter_by(product_id=product.id).all()
@@ -103,11 +130,12 @@ def approve(id):
                 db.session.commit()
             db.session.delete(category)
             db.session.commit()
-            req.status='approved'
-            db.session.commit()            
-            return jsonify({'message':f"Category {category.name} created successfully",
-                            'resource':{'id':category.id,'name':category.name}}), 200
-        elif req.type=='product':
+            req.status = 'approved'
+            db.session.commit()
+            return jsonify({
+                'message': f"Category {category.name} created successfully",
+                'resource': {'id': category.id, 'name': category.name}}), 200
+        elif req.type == 'product':
             data = req.message.split(',')
             name = data[0]
             quantity = int(data[1])
@@ -139,15 +167,18 @@ def approve(id):
                 'description': new_product.description,
                 'rpu': new_product.rpu,
                 'unit': new_product.unit,
-                'image': base64.b64encode(new_product.image).decode('utf-8')  # Assuming image is stored as a base64-encoded string
-            }        
+                # Assuming image is stored as a base64-encoded string
+                'image': base64.b64encode(new_product.image).decode('utf-8')
+            }
             db.session.add(new_product)
             db.session.commit()
-            req.status='approved'
-            db.session.commit()            
-            return jsonify({'message': f"Product {data[0]} add successfully in the database",
-                            'resource': prod_data}), 201            
-        elif req.type=='product update':
+            req.status = 'approved'
+            db.session.commit()
+            return jsonify({
+                'message': f"Product {data[0]} add successfully in the\
+                    database",
+                'resource': prod_data}), 201
+        elif req.type == 'product update':
             data = req.message.split(',')
             product = Product.query.filter_by(id=data[0]).first()
             product.name = data[1]
@@ -170,47 +201,56 @@ def approve(id):
                 'description': product.description,
                 'rpu': product.rpu,
                 'unit': product.unit,
-                'image': base64.b64encode(product.image).decode('utf-8')  # Assuming image is stored as a base64-encoded string
-            } 
-            req.status='approved'
-            db.session.commit()                   
-            return jsonify({'message': f"Product {data[1]} add successfully in the database",
-                            'resource': prod_data}), 201            
-        elif req.type=='product delete':
+                # Assuming image is stored as a base64-encoded string
+                'image': base64.b64encode(product.image).decode('utf-8')
+            }
+            req.status = 'approved'
+            db.session.commit()
+            return jsonify({
+                'message': f"Product {data[1]} add successfully in the\
+                    database",
+                'resource': prod_data}), 201
+        elif req.type == 'product delete':
             data = req.message.split(',')
             product = Product.query.filter_by(id=int(data[0])).first()
             carts = Cart.query.filter_by(product_id=product.id).all()
             for cart in carts:
                 db.session.delete(cart)
-                db.session.commit()        
+                db.session.commit()
             db.session.delete(product)
             db.session.commit()
-            req.status='approved'
-            db.session.commit()            
-            return jsonify({'message': f"Product {product.name} deleted successfully from the database", 'resource':data[0]}), 200            
+            req.status = 'approved'
+            db.session.commit()
+            return jsonify({
+                'message': f"Product {product.name} deleted successfully from\
+                    the database",
+                'resource': data[0]}), 200
     else:
         return jsonify({'message': 'Not found'}), 404
-    
-@app.route('/send/alert', methods=['GET', 'POST'])
+
+
+@admin_bp.route('/send/alert', methods=['GET', 'POST'])
 def send_alert():
-    if request.method=='GET':
+    if request.method == 'GET':
         managers = User.query.filter_by(role='manager').all()
-        man_list=[]
+        man_list = []
         for man in managers:
             man_data = {
                 'id': man.id,
                 'name': man.name,
                 'email': man.email,
             }
-            man_list.append(man_data)       
+            man_list.append(man_data)
         return jsonify(man_list), 200
-    if request.method=='POST':
+    if request.method == 'POST':
         data = request.get_json()
-        print(data, 'for sending alert')
+        from flask import current_app as app
+        mail = mail_factory(app)
         with mail.connect() as conn:
             subject = "Alert from Admin"
             message = data['message']
-            msg = Message(recipients=[data['email']], html=message, subject=subject)
+            msg = Message(recipients=[data['email']],
+                          html=message, subject=subject)
             conn.send(msg)
 
-            return jsonify({'message': "sent"}), 200                      
+            return jsonify({'message': "sent"}), 200

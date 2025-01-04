@@ -1,32 +1,35 @@
+
+
 from backendjobs.workers import celery
 from datetime import datetime
-from database import *
+from database import (
+    User,
+    Product
+)
 from jinja2 import Template
-from flask import render_template
 from flask_sse import sse
 from celery.schedules import crontab
 import csv
-from backendjobs.send_mail import init_mail
+from backendjobs.send_mail import mail_factory
 from flask_mail import Message
-
-mail = init_mail()
 
 
 # scheduled task
 @celery.task()
 def daily_reminder_to_user():
-    users=User.query.all()
+    users = User.query.all()
     for user in users:
-        flag=True
+        flag = True
         for order in user.purchased:
-            print(order.order_date)
-            print(datetime.now())
-            if order.order_date.strftime("%m/%d")==datetime.now().strftime("%m/%d"):
-                flag=False
+            if order.order_date.strftime("%m/%d") == \
+                    datetime.now().strftime("%m/%d"):
+                flag = False
                 break
-        if flag and user.role=='user':
+        if flag and user.role == 'user':
+            from flask import current_app as app
+            mail = mail_factory(app)
             with mail.connect() as conn:
-                subject= "Grocery App V2 Reminder"
+                subject = "Grocery App V2 Reminder"
                 message = """
                         <div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
                             <h1 style="color: #28a745;">Reminder: Visit Eat Fresh App</h1>
@@ -40,21 +43,27 @@ def daily_reminder_to_user():
                             <p>Best regards,<br>Eat Fresh</p>
                         </div>
                         """
-                msg = Message(recipients=[user.email],html=message, subject=subject)
+                msg = Message(recipients=[user.email],
+                              html=message, subject=subject)
                 conn.send(msg)
-            sse.publish({"message": "You have not placed any order, please place now!", "color":"alert alert-primary" },type=user.email)
-    print('daily remider to users executed')
+            sse.publish({
+                "message": "You have not placed any order, please place now!",
+                        "color": "alert alert-primary"}, type=user.email)
     return {"status": "success"}
 
 # scheduled task
+
+
 @celery.task()
 def monthly_entertainment_report_to_users():
-    users=User.query.all()
+    users = User.query.all()
     for user in users:
-        if user.role=='user':
+        if user.role == 'user':
+            from flask import current_app as app
+            mail = mail_factory(app)
             with mail.connect() as conn:
-                subject= "Grocery App V2 Monthly Report"
-                template =Template( """
+                subject = "Grocery App V2 Monthly Report"
+                template = Template("""
                         <div style="max-width: 600px; margin: 20px auto; padding: 20px; background-color: #fff; border-radius: 8px; box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);">
                             <h1 style="color: #007bff;">Order Report</h1>
                             <p>Dear {{ name }},</p>
@@ -87,32 +96,43 @@ def monthly_entertainment_report_to_users():
                             <p>Best regards,<br>Eat Fresh</p>
                         </div>
                         """)
-                message = template.render(name=user.name, orders = user.purchased )
-                msg = Message(recipients=[user.email],html=message, subject=subject)
+                message = template.render(
+                    name=user.name, orders=user.purchased)
+                msg = Message(recipients=[user.email],
+                              html=message, subject=subject)
                 conn.send(msg)
-    sse.publish({"message": "Monthly Report sent"},type='notifyadmin')
-    sse.publish({"message": "Monthly Report sent"},type='notifymanager')
+    sse.publish({"message": "Monthly Report sent"}, type='notifyadmin')
+    sse.publish({"message": "Monthly Report sent"}, type='notifymanager')
     return {"status": "success"}
-        
+
+
 celery.conf.beat_schedule = {
     'my_monthly_task': {
         'task': "backendjobs.tasks.monthly_entertainment_report_to_users",
-        'schedule': crontab(hour=13, minute=50, day_of_month=1, month_of_year='*/1'),  # Sending report to users on first day of each month at 6pm
+        # Sending report to users on first day of each month at 6pm
+        'schedule': crontab(
+            hour=13, minute=50, day_of_month=1, month_of_year='*/1'
+        ),
     },
     'my_daily_task': {
         'task': "backendjobs.tasks.daily_reminder_to_user",
-        'schedule': crontab(hour=21, minute=0),  # Sending email and notification for inactive users
+        # Sending email and notification for inactive users
+        'schedule': crontab(hour=21, minute=0),
     },
     'my_quick_check_task': {
         'task': "backendjobs.tasks.daily_reminder_to_user",
-        'schedule': crontab(minute='*/1'),  # Sending email and notification for inactive users
+        # Sending email and notification for inactive users
+        'schedule': crontab(minute='*/1'),
     },
 }
 
+
 @celery.task()
 def user_triggered_async_job():
-    header = ["Product Name", "Product Quantity", "Product Manufacturing Date", "Product Expiry Date", "Product RPU"]
-    
+    header = ["Product Name", "Product Quantity",
+              "Product Manufacturing Date", "Product Expiry Date",
+              "Product RPU"]
+
     with open('product_report.csv', 'w', newline='') as f:
         csvwriter = csv.writer(f)
         csvwriter.writerow(header)
@@ -125,13 +145,13 @@ def user_triggered_async_job():
                 product.expiry.strftime('%Y-%m-%d'),
                 product.rpu,
             ])
-            item={
-                'name':product.name,
-                'quantity':product.quantity,
-                'manufacture':product.manufacture.strftime('%Y-%m-%d'),
-                'expiry':product.expiry.strftime('%Y-%m-%d'),
-                'description':product.description,
-                'rpu':product.rpu,
+            item = {
+                'name': product.name,
+                'quantity': product.quantity,
+                'manufacture': product.manufacture.strftime('%Y-%m-%d'),
+                'expiry': product.expiry.strftime('%Y-%m-%d'),
+                'description': product.description,
+                'rpu': product.rpu,
             }
             content.append(item)
-    return {'header':header, 'content':content}
+    return {'header': header, 'content': content}
