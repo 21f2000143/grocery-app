@@ -1,4 +1,5 @@
-const NotifiManCompo = Vue.component('NotifiManCompo', {
+const NotifiManCompo = {
+  name: 'NotifiManCompo',
   template: `
   <div class="container">
     <div class="row">
@@ -27,5 +28,5 @@ const NotifiManCompo = Vue.component('NotifiManCompo', {
       message: ''
     }
   }
-})
+};
 export default NotifiManCompo;

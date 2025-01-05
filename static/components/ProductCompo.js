@@ -1,4 +1,5 @@
-const ProductCompo = Vue.component('ProductCompo', {
+const ProductCompo = {
+  name: 'ProductCompo',
   template: `
   <div class="container d-flex justify-content-center mt-2">
     <div class="row gap-2">
@@ -31,5 +32,5 @@ const ProductCompo = Vue.component('ProductCompo', {
   mounted() {
     this.$store.dispatch('fetchProducts')
   }
-});
+};
 export default ProductCompo; 

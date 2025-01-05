@@ -1,4 +1,5 @@
-const CreateCatCompo = Vue.component('CreateCatCompo', {
+const CreateCatCompo = {
+  name: 'CreateCatCompo',
   template: `
   <div class="row justify-content-center m-3 text-color-light">
   <div class="card bg-light" style="width: 18rem;">
@@ -71,5 +72,5 @@ const CreateCatCompo = Vue.component('CreateCatCompo', {
       }
     }
   },
-})
+};
 export default CreateCatCompo;

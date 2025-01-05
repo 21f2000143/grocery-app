@@ -1,4 +1,5 @@
-const RegisterCompo = Vue.component('RegisterCompo', {
+const RegisterCompo = {
+  name: 'RegisterCompo',
   template: `
   <div class="row justify-content-center m-3 text-color-light">
   <div class="card bg-light" style="width: 18rem;">
@@ -46,14 +47,14 @@ const RegisterCompo = Vue.component('RegisterCompo', {
     }
   },
   methods: {
-    closeCard(){
-      if(this.$route.path!='/'){
+    closeCard() {
+      if (this.$route.path != '/') {
         this.$router.push('/')
       }
     },
     async submitForm() {
       try {
-        const response = await fetch('http://127.0.0.1:5000/signup',{
+        const response = await fetch('http://127.0.0.1:5000/signup', {
           method: 'POST',
           headers: {
             'Content-Type': 'application/json',
@@ -66,20 +67,20 @@ const RegisterCompo = Vue.component('RegisterCompo', {
             "role": this.role
           }),
         });
+        const data = await response.json();
         if (response.status === 201) {
-          const data = await response.json();
           alert(data.message);
-          if(this.$route.path!='/login'){
+          if (this.$route.path != '/login') {
             this.$router.push('/login')
             this.closeCard()
           }
-        } else if(response.status === 409) {
-          alert(data.message);
+        } else if (response.status === 409) {
+          alert(data.error);
         }
       } catch (error) {
         console.error(error);
       }
     },
-}
-})
+  }
+};
 export default RegisterCompo;

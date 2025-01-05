@@ -1,4 +1,5 @@
-const ProductUserCompo = Vue.component('ProductUserCompo', {
+const ProductUserCompo = {
+  name: 'ProductUserCompo',
   template: `
   <div class="container d-flex justify-content-center mt-2" style="margin-bottom: 100px; overflow-y: scroll;">
     <div class="row gap-2">
@@ -59,5 +60,5 @@ const ProductUserCompo = Vue.component('ProductUserCompo', {
   mounted(){
     this.$store.dispatch('fetchProducts')
   }  
-});
+};
 export default ProductUserCompo; 

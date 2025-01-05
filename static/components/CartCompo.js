@@ -1,4 +1,5 @@
-const CartCompo = Vue.component('CartCompo', {
+const CartCompo = {
+  name: 'CartCompo',
   template: `
   <div class="container mt-5">
     <h2 class="text-center mb-4">Shopping Cart</h2>
@@ -147,5 +148,5 @@ computed: {
     },
   },
   
-})
+};
 export default CartCompo;

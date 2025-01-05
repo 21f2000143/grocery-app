@@ -1,4 +1,5 @@
-const MainApp = Vue.component('MainApp', {
+const MainApp = {
+    name: 'MainApp',
     template: `
     <div>
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
@@ -95,5 +96,5 @@ const MainApp = Vue.component('MainApp', {
             }
         }
     }
-  });
+  };
 export default MainApp; 

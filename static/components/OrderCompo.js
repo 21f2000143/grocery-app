@@ -1,4 +1,5 @@
-const OrderCompo = Vue.component('OrderCompo', {
+const OrderCompo = {
+  name: 'OrderCompo',
   template: `
   <div class="container mt-5">
   <div class="row item-container">
@@ -66,5 +67,5 @@ const OrderCompo = Vue.component('OrderCompo', {
   mounted(){
     this.$store.dispatch('fetchOrders')
   }
-})
+};
 export default OrderCompo;

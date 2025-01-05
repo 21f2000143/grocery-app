@@ -1,4 +1,5 @@
-const LoginCompo = Vue.component('LoginCompo', {
+const LoginCompo = {
+  name: 'LoginCompo',
   template: `
   <div class="row justify-content-center m-3">
   <div class="card bg-light" style="width: 18rem;">
@@ -62,6 +63,10 @@ const LoginCompo = Vue.component('LoginCompo', {
             return response.json();  // Return the promise for the next then block
           } else if (response.status == 404) {
             this.message = "Wrong credentials";
+          }else if (response.status == 409) {
+            this.message = "User already exists";
+          }else if (response.status == 500) {
+            this.message = "Internal server error";
           }
         })
         .then(data => {
@@ -95,5 +100,5 @@ const LoginCompo = Vue.component('LoginCompo', {
     }
     
   },
-})
+};
 export default LoginCompo;

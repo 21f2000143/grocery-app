@@ -1,4 +1,5 @@
-const ManagerApp = Vue.component('ManagerApp', {
+const ManagerApp = {
+    name: 'ManagerApp',
     template: `
     <div>
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
@@ -229,5 +230,5 @@ const ManagerApp = Vue.component('ManagerApp', {
         this.$store.dispatch('fetchAuthUser')
         this.$store.dispatch('fetchNoti')
     }    
-  });
+  };
 export default ManagerApp; 

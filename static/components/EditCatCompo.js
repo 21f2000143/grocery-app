@@ -1,4 +1,5 @@
-const EditCatCompo = Vue.component('EditCatCompo', {
+const EditCatCompo = {
+  name: 'EditCatCompo',
   template: `
   <div class="row justify-content-center m-3 text-color-light">
   <div class="card bg-light" style="width: 18rem;">
@@ -128,5 +129,5 @@ const EditCatCompo = Vue.component('EditCatCompo', {
   mounted(){
     this.fetchcategory()
   }
-})
+};
 export default EditCatCompo;

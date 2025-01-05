@@ -1,3 +1,4 @@
 .env/
 __pycache__/
 static/bootstrap/
+celerybeat-schedule

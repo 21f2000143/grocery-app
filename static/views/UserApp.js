@@ -1,4 +1,5 @@
-const UserApp = Vue.component('UserApp', {
+const UserApp = {
+    name: 'UserApp',
     template: `
     <div>
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
@@ -251,5 +252,5 @@ const UserApp = Vue.component('UserApp', {
         this.$store.dispatch('fetchAuthUser')
         this.$store.dispatch('fetchCartItems')
     }    
-  });
+  };
 export default UserApp; 

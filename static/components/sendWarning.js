@@ -1,4 +1,5 @@
-const sendWarning = Vue.component('sendWarning', {
+const sendWarning = {
+  name: 'sendWarning',
   template: `
   <div class="row justify-content-center m-3 text-color-light">
   <div class="card bg-light" style="width: 36rem;">
@@ -98,5 +99,5 @@ const sendWarning = Vue.component('sendWarning', {
     mounted(){
       this.fetchManagers()
     } 
-})
+};
 export default sendWarning;

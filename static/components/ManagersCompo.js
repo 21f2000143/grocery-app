@@ -1,4 +1,5 @@
-const ManagersCompo = Vue.component('ManagersCompo', {
+const ManagersCompo = {
+  name: 'ManagersCompo',
   template: `
   <div class="container">
     <div class="row">
@@ -101,5 +102,5 @@ const ManagersCompo = Vue.component('ManagersCompo', {
   mounted(){
     this.$store.dispatch('fetchManagers')
   }
-})
+};
 export default ManagersCompo;

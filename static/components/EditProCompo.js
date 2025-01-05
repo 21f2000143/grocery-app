@@ -1,4 +1,5 @@
-const EditProCompo = Vue.component('EditProCompo', {
+const EditProCompo = {
+  name: 'EditProCompo',
   template: `
   <div class="row justify-content-center m-3 text-color-light">
   <div class="card bg-light" style="width: 36rem;">
@@ -184,5 +185,5 @@ const EditProCompo = Vue.component('EditProCompo', {
   mounted(){
     this.fetchproduct()
   }  
-})
+};
 export default EditProCompo;

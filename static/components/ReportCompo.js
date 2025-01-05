@@ -1,5 +1,5 @@
-
-const ReportCompo = Vue.component('ReportCompo', {
+const ReportCompo = {
+  name: 'ReportCompo',
   template: `
   <div class="container mt-5">
       <h2 class="text-center mb-4">Report</h2>
@@ -63,6 +63,6 @@ const ReportCompo = Vue.component('ReportCompo', {
       });
     }
   }
-});
+};
 
 export default ReportCompo; 

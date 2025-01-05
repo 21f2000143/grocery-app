@@ -56,7 +56,7 @@ def approve(id):
                 name=data[1],
                 role=data[2],
                 password=generate_password_hash(
-                    data[3], method='scrypt'),
+                    data[3]),
                 doj=req.timestamp)
             db.session.add(new_user)
             db.session.commit()

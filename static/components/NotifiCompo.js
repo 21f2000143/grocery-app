@@ -1,4 +1,5 @@
-const NotifiCompo = Vue.component('NotifiCompo', {
+const NotifiCompo = {
+  name: 'NotifiCompo',
   template: `
   <div class="container">
     <div class="row">
@@ -83,5 +84,5 @@ const NotifiCompo = Vue.component('NotifiCompo', {
       }
     },
   },
-})
+};
 export default NotifiCompo;

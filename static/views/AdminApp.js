@@ -1,4 +1,5 @@
-const AdminApp = Vue.component('AdminApp', {
+const AdminApp = {
+    name: 'AdminApp',
     template: `
     <div>
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
@@ -65,7 +66,7 @@ const AdminApp = Vue.component('AdminApp', {
         <ul class="list-group">
             <li class="list-group-item" v-for="category in this.$store.state.categories" :key="category.id">
                 <input @click="searchByCat(category.name, category.id)" class="form-check-input me-1 pointer-on-hover" type="radio" :name="category.name" :value="category.id" :id="category.id" :checked="checkedValue === category.id">
-                <label class="form-check-label" :for="category.id">{{ category.name }}</label>
+                <label class="form-check-label" :for="category.id"> {{ category.name }} </label>
                 <a class="pointer-on-hover" @click="editCat(category.id)">edit</a>
             </li>
         </ul>      
@@ -237,5 +238,5 @@ const AdminApp = Vue.component('AdminApp', {
         this.$store.dispatch('fetchAuthUser')
         this.$store.dispatch('fetchNoti')
     }
-  });
+  };
 export default AdminApp; 

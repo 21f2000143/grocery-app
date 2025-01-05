@@ -1,4 +1,4 @@
-const CreateProCompo = Vue.component('CreateProCompo', {
+const CreateProCompo = {
   template: `
   <div class="row justify-content-center m-3 text-color-light">
   <div class="card bg-light" style="width: 36rem;">
@@ -131,5 +131,5 @@ const CreateProCompo = Vue.component('CreateProCompo', {
       }
     }
   },
-})
+};
 export default CreateProCompo;
