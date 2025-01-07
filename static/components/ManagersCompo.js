@@ -39,8 +39,8 @@ const ManagersCompo = {
   },
   methods: {
     warn(){
-      if(this.$route.path!='/admin/warning'){
-        this.$router.push('/admin/warning')
+      if(this.$route.path!='/app/admin/warning'){
+        this.$router.push('/app/admin/warning')
       }
     },
     submitForm() {
@@ -49,6 +49,7 @@ const ManagersCompo = {
         headers: {
           'Content-Type': 'application/json',
           'Accept': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({
           "email": this.email,
@@ -59,8 +60,8 @@ const ManagersCompo = {
       })
         .then(response => {
           if (response.status == 200) {
-            if(this.$route.path!='/login'){
-              this.$router.push('/login')
+            if(this.$route.path!='/app/login'){
+              this.$router.push('/app/login')
             }
           }
           if (response.status == 409) {
@@ -81,8 +82,8 @@ const ManagersCompo = {
           const response = await fetch('http://127.0.0.1:5000/delete/man/'+id,{
             method: 'DELETE',
             headers: {
-              
               'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('token')}`
             },
           });
           if (response.status === 200) {

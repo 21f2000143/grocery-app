@@ -31,7 +31,8 @@ const NotifiCompo = {
         const response = await fetch('http://127.0.0.1:5000/decline/'+id, {
           method: 'GET',
           headers: {
-            
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
         if (response.status === 200) {
@@ -51,7 +52,8 @@ const NotifiCompo = {
         const response = await fetch('http://127.0.0.1:5000/approve/'+id, {
           method: 'GET',
           headers: {
-            
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`,
           },
         });
         if (response.status === 201) {

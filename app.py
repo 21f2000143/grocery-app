@@ -22,31 +22,29 @@ from werkzeug.security import (
     generate_password_hash,
     check_password_hash
 )
-from flask_login import (
-    LoginManager,
-    login_user,
-    login_required,
+from flask_jwt_extended import (
+    verify_jwt_in_request,
+    create_access_token,
     current_user,
-    logout_user
+    get_jwt,
+    get_jwt_identity,
+    jwt_required,
+    JWTManager
 )
-from functools import wraps
+
+from datetime import timedelta
+import redis
+from role_auth import role_required
 from backendjobs.admin import admin_bp
 from sqlalchemy import or_
 
 
-def role_required(role):
-    def decorator(f):
-        @wraps(f)
-        def decorated_function(*args, **kwargs):
-            if current_user is None or current_user.role != role:
-                return render_template('index.html')
-            return f(*args, **kwargs)
-        return decorated_function
-    return decorator
-
+ACCESS_EXPIRES = timedelta(hours=1)
 
 app = Flask(__name__)
-app.secret_key = 'your_secret_key_here'
+app.config["JWT_SECRET_KEY"] = "super-secret"  # Change this!
+app.config["JWT_COOKIE_CSRF_PROTECT"] = False
+app.config["JWT_ACCESS_TOKEN_EXPIRES"] = ACCESS_EXPIRES
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///project.sqlite3'
 app.config['CACHE_TYPE'] = "RedisCache"
 app.config['CACHE_REDIS_HOST'] = "localhost"
@@ -57,6 +55,7 @@ app.config['CELERY_RESULT_BACKEND'] = "redis://localhost:6379/2"
 app.config['CELERY_TIMEZONE'] = "Asia/Kolkata"
 app.config['REDIS_URL'] = "redis://localhost:6379"
 db.init_app(app)
+jwt = JWTManager(app)
 app.app_context().push()
 with app.app_context():
     db.create_all()
@@ -91,6 +90,45 @@ app.register_blueprint(sse, url_prefix='/stream')
 
 # ---------------------- All operational endpoints --------------#
 main = Blueprint('main', __name__)
+
+
+# Register a callback function that takes whatever object is passed in as the
+# identity when creating JWTs and converts it to a JSON serializable format.
+@jwt.user_identity_loader
+def user_identity_lookup(user):
+    return user
+
+
+# Register a callback function that loads a user from your database whenever
+# a protected route is accessed. This should return any python object on a
+# successful lookup, or None if the lookup failed for any reason (for example
+# if the user has been deleted from the database).
+@jwt.user_lookup_loader
+def user_lookup_callback(_jwt_header, jwt_data):
+    identity = jwt_data["sub"]
+    return User.query.filter_by(email=identity).one_or_none()
+
+
+# Setup our redis connection for storing the blocklisted tokens. You will probably
+# want your redis instance configured to persist data to disk, so that a restart
+# does not cause your application to forget that a JWT was revoked.
+jwt_redis_blocklist = redis.StrictRedis(
+    host="localhost", port=6379, db=0, decode_responses=True
+)
+
+
+# Callback function to check if a JWT exists in the redis blocklist
+@jwt.token_in_blocklist_loader
+def check_if_token_is_revoked(jwt_header, jwt_payload: dict):
+    jti = jwt_payload["jti"]
+    token_in_redis = jwt_redis_blocklist.get(jti)
+    return token_in_redis is not None
+
+
+@app.route("/login", methods=["POST"])
+def login():
+    access_token = create_access_token(identity="example_user")
+    return jsonify(access_token=access_token)
 
 
 @app.route('/search/by/catgory', methods=['POST'])
@@ -181,8 +219,9 @@ def search():
     return jsonify({"cat": categories_list, 'pro': product_list}), 200
 
 
-@main.route('/')
-def index():
+@main.route('/app/', defaults={'page': ''})
+@main.route('/app/<path:page>')
+def index(page):
     return render_template('index.html')
 
 
@@ -255,6 +294,7 @@ def update_order(id):
 
 
 @app.route('/get/orders', methods=['GET'])
+@jwt_required()
 def get_orders():
     try:
         orders = Order.query.filter_by(user_id=current_user.id).all()
@@ -278,7 +318,8 @@ def get_orders():
 
 
 @main.route('/add/to/cart', methods=['POST'])
-# @login_required
+@jwt_required()
+@role_required(['admin', 'manager'])
 def add_to_cart():
     data = request.get_json()
     product_exist = Cart.query.filter_by(product_id=int(data['id'])).first()
@@ -320,7 +361,7 @@ def add_to_cart():
 
 
 @main.route('/get/cart/items')
-@login_required
+@jwt_required()
 def get_cart_items():
     cart_items = Cart.query.filter_by(user_id=current_user.id).all()
     cart_list = []
@@ -338,7 +379,6 @@ def get_cart_items():
 
 
 @main.route('/cart/item/remove/<int:id>', methods=['DELETE'])
-@login_required
 def cart_item_remove(id):
     cart_item = Cart.query.filter_by(id=id).first()
     db.session.delete(cart_item)
@@ -368,7 +408,7 @@ def cart_item_increment(id):
 
 
 @main.route('/cart/items/buy')
-# @login_required
+@jwt_required()
 def cart_items_buy():
     cart_item = Cart.query.filter_by(user_id=current_user.id).all()
     for cart in cart_item:
@@ -387,7 +427,7 @@ def cart_items_buy():
 
 
 @main.route('/cart/item/decrement/<int:id>', methods=['PUT'])
-# @login_required
+@jwt_required()
 def cart_item_decrement(id):
     cart_item = Cart.query.filter_by(id=id).first()
     if cart_item.quantity > 1:
@@ -409,11 +449,10 @@ def cart_item_decrement(id):
         db.session.commit()
         return jsonify({'message': "remove item", "resource": id}), 200
 
-# @login_required
-# @role_required("admin")
-
 
 @main.route('/add/cat', methods=['POST'])
+@jwt_required()
+@role_required(['admin', 'manager'])
 def create():
     data = request.get_json()
     if data:
@@ -453,11 +492,10 @@ def create():
     else:
         abort(404, message="Not found")
 
-# @login_required
-# @role_required("admin")
-
 
 @main.route('/update/<int:cat_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
+@role_required(['admin', 'manager'])
 def update(cat_id):
     if isinstance(cat_id, int):
         if request.method == 'GET':
@@ -524,11 +562,11 @@ def update(cat_id):
                         'timestamp': requested.timestamp.strftime('%Y-%m-%d'),
                     }
                     return jsonify(
-                            {
-                                'message': 'Created request',
-                                'resource': noti_data
-                            }
-                        ), 201
+                        {
+                            'message': 'Created request',
+                            'resource': noti_data
+                        }
+                    ), 201
                 else:
                     products = Product.query.filter_by(
                         category_id=int(cat_id)).all()
@@ -547,16 +585,18 @@ def update(cat_id):
                             'message': f"Category { category.name } Deleted\
                                 successfully from database",
                             'resource': {
-                                            'id': category.id,
-                                            'name': category.name
-                                            }
-                            }), 201
+                                'id': category.id,
+                                'name': category.name
+                            }
+                        }), 201
             return jsonify({'message': "Not found"}), 404
     else:
         return '', 400
 
 
 @main.route('/update/product/<int:prod_id>', methods=['GET', 'PUT', 'DELETE'])
+@jwt_required()
+@role_required(['admin', 'manager'])
 def update_product(prod_id):
     if isinstance(prod_id, int):
         if request.method == 'GET':
@@ -588,7 +628,7 @@ def update_product(prod_id):
                         {request.form['expiry']},{request.form['rpu']},\
                         {request.form['category_id']},{request.form['unit']},\
                         {request.form['description']}"
-                    
+
                     requested = RequestResponse(
                         status='pending',
                         type='product update',
@@ -684,6 +724,7 @@ def update_product(prod_id):
 
 
 @main.route('/update/profile/<int:id>', methods=['PUT'])
+@jwt_required()
 def update_profile(id):
     if isinstance(id, int):
         if request.method == 'PUT':
@@ -696,7 +737,6 @@ def update_profile(id):
                     'id': user.id,
                     'role': user.role,
                     'email': user.email,
-                    'auth_token': current_user.is_authenticated,
                     # Assuming image is stored as a base64-encoded string
                     'image': base64.b64encode(user.image).decode('utf-8')
                 }
@@ -710,6 +750,8 @@ def update_profile(id):
 
 
 @main.route('/get/all/managers', methods=['GET'])
+@jwt_required()
+@role_required(['admin'])
 def all_man():
     if request.method == 'GET':
         managers = User.query.filter_by(role='manager').all()
@@ -732,6 +774,7 @@ def all_man():
 
 
 @main.route('/get/all/noti', methods=['GET'])
+@jwt_required()
 def all_noti():
     if request.method == 'GET':
         if current_user.role == 'admin':
@@ -765,27 +808,29 @@ def all_noti():
 
 @main.route('/auth/user', methods=['GET'])
 def auth_user():
-    if request.method == 'GET':
-        if current_user.is_authenticated:
-            user_data = {
-                'id': current_user.id,
-                'role': current_user.role,
-                'email': current_user.email,
-                'auth_token': current_user.is_authenticated,
-                # Assuming image is stored as a base64-encoded string
-                'image': (base64.b64encode(current_user.image).decode('utf-8')
-                          if current_user.image else None)
-            }
-            return jsonify({
-                'message': "User profile updated successfully in the database",
-                'resource': user_data}), 200
-        else:
-            return jsonify({'message': "Not found"}), 404
+    try:
+        verify_jwt_in_request()
+        email = get_jwt_identity()
+        current_user = User.query.filter_by(email=email).first()
+        user_data = {
+            'id': current_user.id,
+            'role': current_user.role,
+            'email': current_user.email,
+            'auth_token': True,
+            # Assuming image is stored as a base64-encoded string
+            'image': (base64.b64encode(current_user.image).decode('utf-8')
+                      if current_user.image else None)
+        }
+        return jsonify({
+            'message': "User profile updated successfully in the database",
+            'resource': user_data}), 200
+    except Exception as e:
+        return jsonify({"msg": f"Token is invalid: {str(e)}"}), 401
 
 
 @main.route('/add/product', methods=['POST'])
-# @login_required
-# @role_required("admin")
+@jwt_required()
+@role_required(['admin', 'manager'])
 def product():
     if request.method == 'POST':
         name_exist = Product.query.filter_by(name=request.form['name']).first()
@@ -877,26 +922,25 @@ def login_post():
         # if the user doesn't exist or password is wrong, reload the page
         return jsonify({'error': 'wrong credentials'}), 404
     else:
+        access_token = create_access_token(identity=user.email)
         user_data = {
             'id': user.id,
             'role': user.role,
             'email': user.email,
-            'auth_token': current_user.is_authenticated,
+            'access_token': access_token,
             # Assuming image is stored as a base64-encoded string
             'image': (base64.b64encode(user.image).decode('utf-8')
                       if user.image else None)
         }
         user.loginAt = datetime.now()
         db.session.commit()
-        if data['remember']:
-            login_user(user, remember=True)
-        else:
-            login_user(user, remember=False)
         return jsonify({'message': 'User login successfully',
                        'resource': user_data}), 200
 
 
 @auth.route('/decline/<int:id>', methods=['GET'])
+@jwt_required()
+@role_required(['admin'])
 def decline(id):
     req = RequestResponse.query.filter_by(id=id).first()
     if req:
@@ -908,6 +952,8 @@ def decline(id):
 
 
 @auth.route('/delete/man/<int:id>', methods=['DELETE'])
+@jwt_required()
+@role_required(['admin'])
 def delete_man(id):
     man = User.query.filter_by(id=id).first()
     if man:
@@ -958,32 +1004,26 @@ def signup_post():
             "email": data["email"],
             "name": data["name"],
             "role": data["role"],
-            "auth-token": current_user.is_authenticated
         }
         return jsonify(
             {'message': 'User registered successfully',
              'data': verified_data}), 201
 
 
-@auth.route('/logout')
-@login_required
+# Endpoint for revoking the current users access token. Save the JWTs unique
+# identifier (jti) in redis. Also set a Time to Live (TTL)  when storing the JWT
+# so that it will automatically be cleared out of redis after the token expires.
+@app.route("/logout", methods=["DELETE"])
+@jwt_required()
 def logout():
-    logout_user()
+    jti = get_jwt()["jti"]
+    jwt_redis_blocklist.set(jti, "", ex=ACCESS_EXPIRES)
     return jsonify({'message': "logout successful"}), 200
 
 
 app.register_blueprint(auth)
 app.register_blueprint(main)
 app.register_blueprint(admin_bp)
-login_manager = LoginManager()
-login_manager.init_app(app)
-
-
-@login_manager.user_loader
-def load_user(user_id):
-    # since the user_id is just the primary key of our user table, use it in
-    # the query for the user
-    return User.query.filter_by(id=int(user_id)).first()
 
 
 if __name__ == '__main__':

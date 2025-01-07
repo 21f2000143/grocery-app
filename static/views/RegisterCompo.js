@@ -48,8 +48,8 @@ const RegisterCompo = {
   },
   methods: {
     closeCard() {
-      if (this.$route.path != '/') {
-        this.$router.push('/')
+      if (this.$route.path != '/app') {
+        this.$router.push('/app')
       }
     },
     async submitForm() {
@@ -59,6 +59,7 @@ const RegisterCompo = {
           headers: {
             'Content-Type': 'application/json',
             'Accept': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
           },
           body: JSON.stringify({
             "email": this.email,

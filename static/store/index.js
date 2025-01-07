@@ -149,7 +149,8 @@ const store = new Vuex.Store({
       const response = await fetch('http://127.0.0.1:5000/get/orders', {
         method: 'GET',
         headers: {
-          
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         },
       });
       if (response.status === 200) {
@@ -169,7 +170,8 @@ const store = new Vuex.Store({
       const response = await fetch('http://127.0.0.1:5000/get/cart/items', {
         method: 'GET',
         headers: {
-          
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         },
       });
       if (response.status === 200) {
@@ -189,7 +191,8 @@ const store = new Vuex.Store({
       const response = await fetch('http://127.0.0.1:5000/get/products', {
         method: 'GET',
         headers: {
-          
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         },
       });
       if (response.status === 200) {
@@ -204,32 +207,13 @@ const store = new Vuex.Store({
       console.error(error);
     }
   },
-  async fetchAuthUser({ commit }) {
-    try {
-      const response = await fetch('http://127.0.0.1:5000/auth/user', {
-        method: 'GET',
-        headers: {
-          
-        },
-      });
-      if (response.status === 200) {
-        const data = await response.json();
-        console.log(data, "categories fetched")
-        commit('setAuthenticatedUser', data.resource);
-      } else {
-        const data = await response.json();
-        alert(data.message);
-      }
-    } catch (error) {
-      console.error(error);
-    }
-  },
   async fetchManagers({ commit }) {
     try {
       const response = await fetch('http://127.0.0.1:5000/get/all/managers', {
         method: 'GET',
         headers: {
-          
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
       if (response.status === 200) {
@@ -249,7 +233,8 @@ const store = new Vuex.Store({
       const response = await fetch('http://127.0.0.1:5000/get/all/noti', {
         method: 'GET',
         headers: {
-          
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
       if (response.status === 200) {
@@ -269,8 +254,8 @@ const store = new Vuex.Store({
       const response = await fetch('http://127.0.0.1:5000/get/categories', {
         method: 'GET',
         headers: {
-          
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`,
         },
       });
       if (response.status === 200) {

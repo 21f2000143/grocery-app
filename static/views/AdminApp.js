@@ -93,8 +93,9 @@ const AdminApp = {
             this.profilePic = event.target.files[0];
         },         
         home(){
-            if(this.$route.path!='/admin'){
-                this.$router.push('/admin')
+            if(this.$route.path!='/app/admin'){
+                this.$router.push('/app/admin')
+                this.$store.dispatch('fetchCategories')
             }
         },
         change(){
@@ -108,8 +109,8 @@ const AdminApp = {
                 const response = await fetch('http://127.0.0.1:5000/search/by/catgory',{
                   method: 'POST',
                   headers: {
-                    
                     'Content-type': 'application/json'
+                    ,Authorization: `Bearer ${localStorage.getItem('token')}`
                   },
                   body: JSON.stringify({
                       "query": catName
@@ -128,43 +129,45 @@ const AdminApp = {
               }
         },
         createCat(){
-            if(this.$route.path!='/admin/cat/create'){
-                this.$router.push('/admin/cat/create')
+            if(this.$route.path!='/app/admin/cat/create'){
+                this.$router.push('/app/admin/cat/create')
             }
         },
         editCat(id){
-            if(this.$route.path!='/admin/cat/edit/'+id){
-                this.$router.push('/admin/cat/edit/'+id)
+            if(this.$route.path!='/app/admin/cat/edit'+id){
+                this.$router.push('/app/admin/cat/edit'+id)
             }
         },
         createPro(){
-            if(this.$route.path!='/admin/pro/create'){
-                this.$router.push('/admin/pro/create')
+            if(this.$route.path!='/app/admin/pro/create'){
+                this.$router.push('/app/admin/pro/create')
             }
         },
         managers(){
-            if(this.$route.path!='/admin/managers'){
-                this.$router.push('/admin/managers')
+            if(this.$route.path!='/app/admin/managers'){
+                this.$router.push('/app/admin/managers')
             }
         },
         notifi(){
-            if(this.$route.path!='/admin/notifications'){
-                this.$router.push('/admin/notifications')
+            if(this.$route.path!='/app/admin/notifications'){
+                this.$router.push('/app/admin/notifications')
             }
         },
         async logout() {
             try {
               const response = await fetch('http://127.0.0.1:5000/logout', {
-                method: 'GET',
+                method: 'DELETE',
                 headers: {
-                  
+                  'Content-Type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
                 },
               });
               if (response.status === 200) {
                 const data = await response.json();
                 this.$store.commit('setAuthenticatedUser', '')
-                if(this.$route.path!='/'){
-                    this.$router.push('/')
+                localStorage.removeItem('token')
+                if(this.$route.path!='/app'){
+                    this.$router.push('/app')
                 }                
               } else {
                 const data = await response.json();
@@ -175,8 +178,8 @@ const AdminApp = {
             }
           },        
         stats(){
-            if(this.$route.path!='/admin/report'){
-                this.$router.push('/admin/report')
+            if(this.$route.path!='/app/admin/report'){
+                this.$router.push('/app/admin/report')
             }
         },
         async search() {
@@ -184,8 +187,8 @@ const AdminApp = {
               const response = await fetch('http://127.0.0.1:5000/search/for',{
                 method: 'POST',
                 headers: {
-                  
                   'Content-type': 'application/json'
+                    ,Authorization: `Bearer ${localStorage.getItem('token')}`
                 },
                 body: JSON.stringify({
                     "query": this.query
@@ -211,7 +214,8 @@ const AdminApp = {
               const response = await fetch('http://127.0.0.1:5000/update/profile/'+this.$store.state.authenticatedUser.id,{
                 method: 'PUT',
                 headers: {
-                  
+                  'Content-type': 'application/json',
+                    Authorization: `Bearer ${localStorage.getItem('token')}`
                 },
                 body: formData,
               });

@@ -21,9 +21,6 @@ const LoginCompo = {
           <label for="exampleInputPassword1" class="form-label">Password</label>
           <input type="password" v-model="password" class="form-control" id="exampleInputPassword1">
         </div>
-        <div class="mb-3">
-        <label for="remember">Remember Me</label> <input id="remember" name="remember" type="checkbox" v-model="remember" value="y">
-        </div>
         <button type="submit" class="btn btn-outline-primary">Login</button>
       </form>
     </div>
@@ -42,8 +39,8 @@ const LoginCompo = {
   },
   methods: {
     closeCard(){
-      if(this.$route.path!='/'){
-        this.$router.push('/')
+      if(this.$route.path!='/app'){
+        this.$router.push('/app')
       }
     },
     submitForm() {
@@ -51,6 +48,7 @@ const LoginCompo = {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',
+          Authorization: `Bearer ${localStorage.getItem('token')}`
         },
         body: JSON.stringify({
           "email": this.email,
@@ -71,24 +69,25 @@ const LoginCompo = {
         })
         .then(data => {
           if (data && data.resource.role) {
+            localStorage.setItem('token', data.resource.access_token);
             if (data.resource.role === 'admin') {
               this.$store.commit('setAuthenticatedUser', data.resource)
-              if (this.$route.path !== '/admin') {
-                this.$router.push('/admin');
+              if (this.$route.path !== '/app/admin') {
+                this.$router.push('/app/admin');
               }
             } else if (data.resource.role === 'user') {
               this.$store.commit('setAuthenticatedUser', data.resource)
-              if (this.$route.path !== '/user') {
-                this.$router.push('/user');
+              if (this.$route.path !== '/app/user') {
+                this.$router.push('/app/user');
               }
             } else if (data.resource.role === 'manager') {
               this.$store.commit('setAuthenticatedUser', data.resource)
-              if (this.$route.path !== '/manager') {
-                this.$router.push('/manager');
+              if (this.$route.path !== '/app/manager') {
+                this.$router.push('/app/manager');
               }
             } else {
-              if (this.$route.path !== '/') {
-                this.$router.push('/');
+              if (this.$route.path !== '/app') {
+                this.$router.push('/app');
               }
             }
           }

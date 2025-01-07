@@ -30,6 +30,7 @@
     import LoginCompo from "../static/views/LoginCompo.js";
     import MainApp from "../static/views/MainApp.js";
     import CreateCatCompo from "../static/components/CreateCatCompo.js";
+    import NotFound from "../static/components/NotFound.js";
     import CreateProCompo from "../static/components/CreateProCompo.js";
     import EditCatCompo from "../static/components/EditCatCompo.js";
     import EditProCompo from "../static/components/EditProCompo.js";
@@ -44,55 +45,61 @@
     import sendWarning from "../static/components/sendWarning.js";
 
     const routes = [
-      { path: '/', component: HomeView },
-      { path: '/login', component: LoginCompo },
-      { path: '/register', component: RegisterCompo },
+      { path: '/app', component: HomeView },
+      { path: '/app/login', component: LoginCompo },
+      { path: '/app/register', component: RegisterCompo },
+      // Catch-all route for undefined paths
+      {
+        path: '/:pathMatch(.*)*', // Use '*' for Vue Router 3
+        name: 'NotFound',
+        component: NotFound,
+      },
 
       {
-        path: '/admin', component: AdminApp, children: [
-          { path: '/admin', component: ProductCompo },
-          { path: '/admin/cat/create', component: CreateCatCompo },
-          { path: '/admin/cat/edit/:id', component: EditCatCompo },
-          { path: '/admin/pro/create', component: CreateProCompo },
-          { path: '/admin/pro/edit/:id', component: EditProCompo },
-          { path: '/admin/managers', component: ManagersCompo },
-          { path: '/admin/notifications', component: NotifiCompo },
-          { path: '/admin/report', component: ReportCompo },
-          { path: '/admin/warning', component: sendWarning }
+        path: '/app/admin', component: AdminApp, children: [
+          { path: '/app/admin', component: ProductCompo },
+          { path: '/app/admin/cat/create', component: CreateCatCompo },
+          { path: '/app/admin/cat/edit/:id', component: EditCatCompo },
+          { path: '/app/admin/pro/create', component: CreateProCompo },
+          { path: '/app/admin/pro/edit/:id', component: EditProCompo },
+          { path: '/app/admin/managers', component: ManagersCompo },
+          { path: '/app/admin/notifications', component: NotifiCompo },
+          { path: '/app/admin/report', component: ReportCompo },
+          { path: '/app/admin/warning', component: sendWarning }
         ]
       },
       {
-        path: '/manager', component: ManagerApp, children: [
-          { path: '/manager', component: ProductCompo },
-          { path: '/manager/cat/create', component: CreateCatCompo },
-          { path: '/manager/cat/edit/:id', component: EditCatCompo },
-          { path: '/manager/pro/create', component: CreateProCompo },
-          { path: '/manager/pro/edit/:id', component: EditProCompo },
-          { path: '/manager/notifications', component: NotifiManCompo },
-          { path: '/manager/report', component: ReportCompo }
+        path: '/app/manager', component: ManagerApp, children: [
+          { path: '/app/manager', component: ProductCompo },
+          { path: '/app/manager/cat/create', component: CreateCatCompo },
+          { path: '/app/manager/cat/edit/:id', component: EditCatCompo },
+          { path: '/app/manager/pro/create', component: CreateProCompo },
+          { path: '/app/manager/pro/edit/:id', component: EditProCompo },
+          { path: '/app/manager/notifications', component: NotifiManCompo },
+          { path: '/app/manager/report', component: ReportCompo }
         ]
       },
       {
-        path: '/user', component: UserApp, children: [
-          { path: '/user', component: ProductUserCompo },
-          { path: '/user/CartCompo', component: CartCompo },
-          { path: '/user/your/orders', component: OrderCompo },
-          { path: '/user/pro/create', component: CreateProCompo },
-          { path: '/user/pro/edit', component: EditProCompo },
-          { path: '/user/notifications', component: NotifiCompo },
-          { path: '/user/report', component: ReportCompo }
+        path: '/app/user', component: UserApp, children: [
+          { path: '/app/user', component: ProductUserCompo },
+          { path: '/app/user/CartCompo', component: CartCompo },
+          { path: '/app/user/your/orders', component: OrderCompo },
+          { path: '/app/user/pro/create', component: CreateProCompo },
+          { path: '/app/user/pro/edit', component: EditProCompo },
+          { path: '/app/user/notifications', component: NotifiCompo },
+          { path: '/app/user/report', component: ReportCompo }
         ]
       }
     ];
 
-    
+
     const { createApp } = Vue
     const app = createApp({
     })
-    
-    const { createRouter, createMemoryHistory } = VueRouter
+
+    const { createRouter, createWebHistory } = VueRouter
     const router = createRouter({
-      history: createMemoryHistory(),
+      history: createWebHistory(),
       routes // short for `routes: routes`
     })
     app.use(router)
@@ -122,6 +129,44 @@
       return new bootstrap.Tooltip(tooltipTriggerEl);
     });
     app.mount('#app')
+
+    async function isAuthenticated() {
+      try {
+        const response = await fetch('http://127.0.0.1:5000/auth/user', {
+          method: 'GET',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
+          },
+        });
+        if (response.status === 200) {
+          const data = await response.json();
+          console.log(data, "categories fetched")
+          return true;
+        } else {
+          const data = await response.json();
+          console.log(data.message);
+          return false;
+        }
+      } catch (error) {
+        console.error(error);
+        return false;
+      }
+    };
+    // Adding Vue Router Guard
+    router.beforeEach((to, from, next) => {
+      if (to.path == '/app/login') {
+        next()
+      } else if (to.path == '/app') {
+        next()
+      } else if (to.path == '/app/register') {
+        next()
+      } else if (!localStorage.getItem('token') || !isAuthenticated()) { // when both conditions are True
+        next({ path: '/app/login' })
+      } else {
+        next()
+      }
+    })
   </script>
 </body>
 

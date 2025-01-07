@@ -43,8 +43,8 @@ const OrderCompo = {
           const response = await fetch('http://127.0.0.1:5000/update/order/'+id, {
             method: 'PUT',
             headers: {
-              
-              'Content-Type': 'Application/json'
+              'Content-Type': 'Application/json',
+              Authorization: `Bearer ${localStorage.getItem('token')}`
             },
             body: JSON.stringify({
                 'value':value

@@ -71,28 +71,28 @@ const MainApp = {
     `,
     methods: {
         home(){
-            if(this.$route.path!='/admin'){
-                this.$router.push('/admin')
+            if(this.$route.path!='/app/app/admin'){
+                this.$router.push('/app/app/admin')
             }
         },
         createCat(){
-            if(this.$route.path!='/admin/cat/create'){
-                this.$router.push('/admin/cat/create')
+            if(this.$route.path!='/app/admin/cat/create'){
+                this.$router.push('/app/admin/cat/create')
             }
         },
         editCat(){
-            if(this.$route.path!='/admin/cat/edit'){
-                this.$router.push('/admin/cat/edit')
+            if(this.$route.path!='/app/admin/cat/edit'){
+                this.$router.push('/app/admin/cat/edit')
             }
         },
         createPro(){
-            if(this.$route.path!='/admin/pro/create'){
-                this.$router.push('/admin/pro/create')
+            if(this.$route.path!='/app/admin/pro/create'){
+                this.$router.push('/app/admin/pro/create')
             }
         },
         editPro(){
-            if(this.$route.path!='/admin/pro/edit'){
-                this.$router.push('/admin/pro/edit')
+            if(this.$route.path!='/app/admin/pro/edit'){
+                this.$router.push('/app/admin/pro/edit')
             }
         }
     }

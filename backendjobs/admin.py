@@ -16,7 +16,10 @@ from flask import (
     jsonify
 )
 from datetime import datetime
+from flask import current_app as app
 import base64
+from role_auth import role_required
+from flask_jwt_extended import jwt_required
 from werkzeug.security import generate_password_hash
 from backendjobs.send_mail import mail_factory
 from flask_mail import Message
@@ -25,6 +28,8 @@ admin_bp = Blueprint('admin_bp', __name__)
 
 
 @admin_bp.route('/get/report/data', methods=['GET'])
+@jwt_required()
+@role_required(['admin', 'manager'])
 def get_report():
     job = user_triggered_async_job.delay()
     result = job.get()
@@ -32,6 +37,8 @@ def get_report():
 
 
 @admin_bp.route('/get/report/download', methods=['GET'])
+@jwt_required()
+@role_required(['admin', 'manager'])
 def download_report():
     with open('product_report.csv', 'r') as file:
         csv_reader = csv.reader(file)
@@ -46,6 +53,8 @@ def download_report():
 
 
 @admin_bp.route('/approve/<int:id>', methods=['GET'])
+@jwt_required()
+@role_required(['admin', 'manager'])
 def approve(id):
     req = RequestResponse.query.filter_by(id=id).first()
     if req:
@@ -74,7 +83,6 @@ def approve(id):
             }
             req.status = 'approved'
             db.session.commit()
-            from flask import current_app as app
             mail = mail_factory(app)
             with mail.connect() as conn:
                 subject = "Manager Role Application Approved"
@@ -230,6 +238,8 @@ def approve(id):
 
 
 @admin_bp.route('/send/alert', methods=['GET', 'POST'])
+@jwt_required()
+@role_required(['admin', 'manager'])
 def send_alert():
     if request.method == 'GET':
         managers = User.query.filter_by(role='manager').all()

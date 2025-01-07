@@ -78,13 +78,13 @@ const CreateProCompo = {
   methods: {
     closeCard(){
       if(this.$store.state.authenticatedUser.role==='admin'){
-        if(this.$route.path!='/admin'){
-          this.$router.push('/admin')
+        if(this.$route.path!='/app/admin'){
+          this.$router.push('/app/admin')
         }
       }
       else{
-        if(this.$route.path!='/manager'){
-          this.$router.push('/manager')
+        if(this.$route.path!='/app/manager'){
+          this.$router.push('/app/manager')
         }
       }
     },
@@ -106,7 +106,8 @@ const CreateProCompo = {
         const response = await fetch('http://127.0.0.1:5000/add/product',{
           method: 'POST',
           headers: {
-            
+            'Content-type': 'application/json',
+            Authorization: `Bearer ${localStorage.getItem('token')}`
           },
           body: formData,
         });

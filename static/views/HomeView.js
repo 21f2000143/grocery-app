@@ -28,52 +28,18 @@ const HomeView = {
   `,
   methods: {
     login() {
-      if (this.$route.path !== '/login') {
-        this.$router.push('/login')
+      if (this.$route.path !== '/app/login') {
+        this.$router.push('/app/login')
       }
     },
     register() {
-      if (this.$route.path !== '/register') {
-        this.$router.push('/register')
+      if (this.$route.path !== '/app/register') {
+        this.$router.push('/app/register')
       }
-    },
-    async fetchUser() {
-      try {
-        const response = await fetch('http://127.0.0.1:5000/auth/user', {
-          method: 'GET',
-          headers: {
-            // Add necessary headers if needed
-          },
-        });
-        if (response.status === 200) {
-          const data = await response.json();
-          console.log(data, "products fetched")
-          this.$store.commit('setAuthenticatedUser', data.resource);
-          if (data.resource.role === 'admin') {
-            if (this.$route.path !== '/admin') {
-              this.$router.push('/admin')
-            }
-          } else if (data.resource.role === 'manager') {
-            if (this.$route.path !== '/manager') {
-              this.$router.push('/manager')
-            }
-          } else if (data.resource.role === 'user') {
-            if (this.$route.path !== '/user') {
-              this.$router.push('/user')
-            }
-          } else {
-            if (this.$route.path !== '/') {
-              this.$router.push('/')
-            }
-          }
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    },
+    }
   },
   mounted() {
-    this.fetchUser()
+    this.$store.dispatch('fetchAuthUser')
   }
 };
 export default HomeView;

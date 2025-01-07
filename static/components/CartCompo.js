@@ -54,8 +54,8 @@ const CartCompo = {
           const response = await fetch('http://127.0.0.1:5000/cart/item/increment/'+id,{
             method: 'PUT',
             headers: {
-              
               'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('token')}`
             }
           });
           if (response.status === 201) {
@@ -65,7 +65,6 @@ const CartCompo = {
           }
           else {
             const data = await response.json();
-            alert(data.message);
           }
         } catch (error) {
           console.error(error);
@@ -76,8 +75,8 @@ const CartCompo = {
           const response = await fetch('http://127.0.0.1:5000/cart/item/decrement/'+id,{
             method: 'PUT',
             headers: {
-              
               'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('token')}`
             }
           });
           if (response.status === 201) {
@@ -90,7 +89,6 @@ const CartCompo = {
           }
           else {
             const data = await response.json();
-            alert(data.message);
           }
         } catch (error) {
           console.error(error);
@@ -101,8 +99,8 @@ const CartCompo = {
           const response = await fetch('http://127.0.0.1:5000/cart/item/remove/'+id,{
             method: 'DELETE',
             headers: {
-              
               'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('token')}`
             }
           });
           if (response.status === 200) {
@@ -112,7 +110,6 @@ const CartCompo = {
           } 
           else {
             const data = await response.json();
-            alert(data.message);
           }
         } catch (error) {
           console.error(error);
@@ -123,8 +120,8 @@ const CartCompo = {
           const response = await fetch('http://127.0.0.1:5000/cart/items/buy',{
             method: 'GET',
             headers: {
-              
               'Content-Type': 'application/json',
+              Authorization: `Bearer ${localStorage.getItem('token')}` 
             }
           });
           if (response.status === 200) {
@@ -134,7 +131,6 @@ const CartCompo = {
           } 
           else {
             const data = await response.json();
-            alert(data.message);
           }
         } catch (error) {
           console.error(error);

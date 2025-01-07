@@ -24,8 +24,8 @@ const ProductCompo = {
   `,
   methods: {
     editPro(id) {
-      if (this.$route.path != '/admin/pro/edit/' + id) {
-        this.$router.push('/admin/pro/edit/' + id)
+      if (this.$route.path != '/app/admin/pro/edit/' + id) {
+        this.$router.push('/app/admin/pro/edit/' + id)
       }
     },
   },
