@@ -125,12 +125,6 @@ def check_if_token_is_revoked(jwt_header, jwt_payload: dict):
     return token_in_redis is not None
 
 
-@app.route("/login", methods=["POST"])
-def login():
-    access_token = create_access_token(identity="example_user")
-    return jsonify(access_token=access_token)
-
-
 @app.route('/search/by/catgory', methods=['POST'])
 def searchByCategory():
     # Get the search query parameters from the request
