@@ -63,65 +63,63 @@ const CreateProCompo = {
   data() {
     return {
       product: {
-        name: '',
+        name: "",
         quantity: 0,
-        manufacture: '',
-        expiry: '',
+        manufacture: "",
+        expiry: "",
         rpu: 0,
-        unit: '',
-        description: '',
+        unit: "",
+        description: "",
         image: null,
-        category_id: ''
-      }
-  }
-},
+        category_id: "",
+      },
+    };
+  },
   methods: {
-    closeCard(){
-      if(this.$store.state.authenticatedUser.role==='admin'){
-        if(this.$route.path!='/app/admin'){
-          this.$router.push('/app/admin')
+    closeCard() {
+      if (this.$store.state.authenticatedUser.role === "admin") {
+        if (this.$route.path != "/app/admin") {
+          this.$router.push("/app/admin");
         }
-      }
-      else{
-        if(this.$route.path!='/app/manager'){
-          this.$router.push('/app/manager')
+      } else {
+        if (this.$route.path != "/app/manager") {
+          this.$router.push("/app/manager");
         }
       }
     },
     handleFileUpload(event) {
       this.product.image = event.target.files[0];
-    },       
+    },
     async addProduct() {
       const formData = new FormData();
-      formData.append('name', this.product.name);
-      formData.append('quantity', this.product.quantity);
-      formData.append('manufacture', this.product.manufacture);
-      formData.append('expiry', this.product.expiry);
-      formData.append('rpu', this.product.rpu);
-      formData.append('unit', this.product.unit);
-      formData.append('description', this.product.description);
-      formData.append('image', this.product.image);
-      formData.append('category_id', this.product.category_id);
+      formData.append("name", this.product.name);
+      formData.append("quantity", this.product.quantity);
+      formData.append("manufacture", this.product.manufacture);
+      formData.append("expiry", this.product.expiry);
+      formData.append("rpu", this.product.rpu);
+      formData.append("unit", this.product.unit);
+      formData.append("description", this.product.description);
+      formData.append("image", this.product.image);
+      formData.append("category_id", this.product.category_id);
       try {
-        const response = await fetch('http://127.0.0.1:5000/add/product',{
-          method: 'POST',
+        const response = await fetch("http://127.0.0.1:5000/add/product", {
+          method: "POST",
           headers: {
-            'Content-type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+            "Content-type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: formData,
         });
         if (response.status === 201) {
           const data = await response.json();
-          console.log(data.resource)
-          if(this.$store.state.authenticatedUser.role==='admin'){
-            this.$store.commit('addProduct', data.resource)
+          console.log(data.resource);
+          if (this.$store.state.authenticatedUser.role === "admin") {
+            this.$store.commit("addProduct", data.resource);
+          } else {
+            this.$store.commit("addNoti", data.resource);
           }
-          else{
-            this.$store.commit('addNoti', data.resource)
-          }           
-          this.closeCard()
-        } else if(response.status === 409){ 
+          this.closeCard();
+        } else if (response.status === 409) {
           const data = await response.json();
           alert(data.message);
         } else {
@@ -130,7 +128,7 @@ const CreateProCompo = {
       } catch (error) {
         console.error(error);
       }
-    }
+    },
   },
 };
 export default CreateProCompo;

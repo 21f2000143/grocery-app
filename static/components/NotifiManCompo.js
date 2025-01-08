@@ -1,5 +1,5 @@
 const NotifiManCompo = {
-  name: 'NotifiManCompo',
+  name: "NotifiManCompo",
   template: `
   <div class="container">
     <div class="row">
@@ -21,12 +21,12 @@ const NotifiManCompo = {
     `,
   data() {
     return {
-      email: '',
-      name: '',
-      password: '',
-      role: '',
-      message: ''
-    }
-  }
+      email: "",
+      name: "",
+      password: "",
+      role: "",
+      message: "",
+    };
+  },
 };
 export default NotifiManCompo;

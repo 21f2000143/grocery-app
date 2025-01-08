@@ -1,5 +1,5 @@
 const CartCompo = {
-  name: 'CartCompo',
+  name: "CartCompo",
   template: `
   <div class="container mt-5">
     <h2 class="text-center mb-4">Shopping Cart</h2>
@@ -36,113 +36,117 @@ const CartCompo = {
 </div>
     `,
 
-    data() {
-      return {
-        cartItems: [
-          { name: 'Item 1', price: 10.99, quantity: 2 },
-          { name: 'Item 2', price: 5.99, quantity: 3 },
-          { name: 'Item 2', price: 5.99, quantity: 3 },
-          { name: 'Item 2', price: 5.99, quantity: 3 },
-          { name: 'Item 2', price: 5.99, quantity: 3 }
-          // Add more items as needed
+  data() {
+    return {
+      cartItems: [
+        { name: "Item 1", price: 10.99, quantity: 2 },
+        { name: "Item 2", price: 5.99, quantity: 3 },
+        { name: "Item 2", price: 5.99, quantity: 3 },
+        { name: "Item 2", price: 5.99, quantity: 3 },
+        { name: "Item 2", price: 5.99, quantity: 3 },
+        // Add more items as needed
       ],
-      }
-    },
+    };
+  },
   methods: {
     async increaseQuantity(id) {
-        try {
-          const response = await fetch('http://127.0.0.1:5000/cart/item/increment/'+id,{
-            method: 'PUT',
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:5000/cart/item/increment/" + id,
+          {
+            method: "PUT",
             headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-          });
-          if (response.status === 201) {
-            const data = await response.json();
-            console.log(data.resource)
-            this.$store.commit('updateToCart', data.resource)      
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           }
-          else {
-            const data = await response.json();
-          }
-        } catch (error) {
-          console.error(error);
+        );
+        if (response.status === 201) {
+          const data = await response.json();
+          console.log(data.resource);
+          this.$store.commit("updateToCart", data.resource);
+        } else {
+          const data = await response.json();
         }
-      },
+      } catch (error) {
+        console.error(error);
+      }
+    },
     async decreaseQuantity(id) {
-        try {
-          const response = await fetch('http://127.0.0.1:5000/cart/item/decrement/'+id,{
-            method: 'PUT',
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:5000/cart/item/decrement/" + id,
+          {
+            method: "PUT",
             headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-          });
-          if (response.status === 201) {
-            const data = await response.json();
-            console.log(data.resource)
-            this.$store.commit('updateToCart', data.resource)      
-          } else if(response.status===200){
-            const data = await response.json();
-            this.$store.commit('deleteToCart', data.resource)
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           }
-          else {
-            const data = await response.json();
-          }
-        } catch (error) {
-          console.error(error);
+        );
+        if (response.status === 201) {
+          const data = await response.json();
+          console.log(data.resource);
+          this.$store.commit("updateToCart", data.resource);
+        } else if (response.status === 200) {
+          const data = await response.json();
+          this.$store.commit("deleteToCart", data.resource);
+        } else {
+          const data = await response.json();
         }
-      },
+      } catch (error) {
+        console.error(error);
+      }
+    },
     async removeItem(id) {
-        try {
-          const response = await fetch('http://127.0.0.1:5000/cart/item/remove/'+id,{
-            method: 'DELETE',
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:5000/cart/item/remove/" + id,
+          {
+            method: "DELETE",
             headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
-          });
-          if (response.status === 200) {
-            const data = await response.json();
-            this.$store.commit('deleteToCart', data.resource)      
-            console.log(data.resource)
-          } 
-          else {
-            const data = await response.json();
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           }
-        } catch (error) {
-          console.error(error);
+        );
+        if (response.status === 200) {
+          const data = await response.json();
+          this.$store.commit("deleteToCart", data.resource);
+          console.log(data.resource);
+        } else {
+          const data = await response.json();
         }
-      },
+      } catch (error) {
+        console.error(error);
+      }
+    },
     async payAndConfirm() {
-        try {
-          const response = await fetch('http://127.0.0.1:5000/cart/items/buy',{
-            method: 'GET',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem('token')}` 
-            }
-          });
-          if (response.status === 200) {
-            const data = await response.json();
-            this.$store.commit('setCart', data.resource)      
-            alert(data.message)
-          } 
-          else {
-            const data = await response.json();
-          }
-        } catch (error) {
-          console.error(error);
+      try {
+        const response = await fetch("http://127.0.0.1:5000/cart/items/buy", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        if (response.status === 200) {
+          const data = await response.json();
+          this.$store.commit("setCart", data.resource);
+          alert(data.message);
+        } else {
+          const data = await response.json();
         }
-      },
+      } catch (error) {
+        console.error(error);
+      }
+    },
   },
-// In your component
-computed: {
+  // In your component
+  computed: {
     totalAmount() {
       return this.$store.getters.getTotalAmount;
     },
   },
-  
 };
 export default CartCompo;

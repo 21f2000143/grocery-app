@@ -1,6 +1,6 @@
 const UserApp = {
-    name: 'UserApp',
-    template: `
+  name: "UserApp",
+  template: `
     <div>
     <nav class="navbar navbar-expand-lg navbar-dark bg-success">
         <div class="container">
@@ -72,188 +72,201 @@ const UserApp = {
     </footer>
 </div>
     `,
-    data() {
-        return {
-            cartItemsCount: 3,
-            picUpdate: false,
-            profilePic: null,
-            query: '', // Replace this with the actual count of items in your shopping cart,
-            checkedValue: -1
-        };
+  data() {
+    return {
+      cartItemsCount: 3,
+      picUpdate: false,
+      profilePic: null,
+      query: "", // Replace this with the actual count of items in your shopping cart,
+      checkedValue: -1,
+    };
+  },
+  methods: {
+    handleFileUpload(event) {
+      this.profilePic = event.target.files[0];
     },
-    methods: {
-        handleFileUpload(event) {
-            this.profilePic = event.target.files[0];
-        },
-        home() {
-            if (this.$route.path != '/app/user') {
-                this.$router.push('/app/user')
-            }
-        },
-        createCat() {
-            if (this.$route.path != '/app/user/cat/create') {
-                this.$router.push('/app/user/cat/create')
-            }
-        },
-        editCat() {
-            if (this.$route.path != '/app/user/cat/edit') {
-                this.$router.push('/app/user/cat/edit')
-            }
-        },
-        createPro() {
-            if (this.$route.path != '/app/user/pro/create') {
-                this.$router.push('/app/user/pro/create')
-            }
-        },
-        notifi() {
-            if (this.$route.path != '/app/user/notifications') {
-                this.$router.push('/app/user/notifications')
-            }
-        },
-        async logout() {
-            try {
-                const response = await fetch('http://127.0.0.1:5000/logout', {
-                    method: 'DELETE',
-                    headers: {
-                        'Content-Type': 'application/json',
-                        Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    },
-                });
-                if (response.status === 200) {
-                    const data = await response.json();
-                    this.$store.commit('setAuthenticatedUser', '')
-                    localStorage.removeItem('token')
-                    if (this.$route.path != '/app') {
-                        this.$router.push('/app')
-                    }
-                } else {
-                    const data = await response.json();
-                    alert(data.message);
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        },
-        stats() {
-            if (this.$route.path != '/app/user/report') {
-                this.$router.push('/app/user/report')
-                this.$store.dispatch('fetchCategories')
-            }
-        },
-        async searchByCat(catName, catId) {
-            this.checkedValue = catId;
-            try {
-                const response = await fetch('http://127.0.0.1:5000/search/by/catgory', {
-                    method: 'POST',
-                    headers: {
-                        'Content-type': 'application/json',
-                        Authorization: `Bearer ${localStorage.getItem('token')}`,
-                    },
-                    body: JSON.stringify({
-                        "query": catName
-                    }),
-                });
-                if (response.status === 200) {
-                    const data = await response.json();
-                    this.$store.commit('setProducts', data.pro)
-                    console.log(data.resource)
-                } else {
-                    const data = await response.json();
-                    alert(data.message);
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        },
-        shareViaWhatsApp() {
-            // Replace 'your_share_message' with the message you want to share
-            const message = encodeURIComponent('Check out this amazing app! Join now.');
-
-            // Replace 'your_web_url' with the URL of your web application
-            const url = encodeURIComponent('http://127.0.0.1:5000/');
-
-            // Construct the WhatsApp share URL
-            const whatsappUrl = `https://api.whatsapp.com/send?text=${message}%20${url}`;
-
-            // Open a new window with the WhatsApp share URL
-            window.open(whatsappUrl, '_blank');
-        },
-        async search() {
-            try {
-                const response = await fetch('http://127.0.0.1:5000/search/for', {
-                    method: 'POST',
-                    headers: {
-                        'Content-type': 'application/json',
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: JSON.stringify({
-                        "query": this.query
-                    }),
-                });
-                if (response.status === 200) {
-                    const data = await response.json();
-                    this.$store.commit('setCategories', data.cat)
-                    this.$store.commit('setProducts', data.pro)
-                    console.log(data.resource)
-                } else {
-                    const data = await response.json();
-                    alert(data.message);
-                }
-            } catch (error) {
-                console.error(error);
-            }
-        },
-        cart() {
-            if (this.$route.path != '/app/user/CartCompo') {
-                this.$router.push('/app/user/CartCompo')
-            }
-        },
-        orders() {
-            if (this.$route.path != '/app/user/your/orders') {
-                this.$router.push('/app/user/your/orders')
-            }
-        },
-        change() {
-            if (this.picUpdate == false) {
-                this.picUpdate = true
-            }
-        },
-        notifi() {
-            // Your notification logic here
-        },
-        async updatePic() {
-            const formData = new FormData();
-            formData.append('image', this.profilePic);
-            try {
-                const response = await fetch('http://127.0.0.1:5000/update/profile/' + this.$store.state.authenticatedUser.id, {
-                    method: 'PUT',
-                    headers: {
-                        Authorization: `Bearer ${localStorage.getItem('token')}`
-                    },
-                    body: formData,
-                });
-                if (response.status === 201) {
-                    const data = await response.json();
-                    console.log(data.resource)
-                    this.$store.commit('setAuthenticatedUser', data.resource)
-                    this.picUpdate = false
-                } else {
-                    alert(data.message);
-                }
-            } catch (error) {
-                console.error(error);
-            }
+    home() {
+      if (this.$route.path != "/app/user") {
+        this.$router.push("/app/user");
+      }
+    },
+    createCat() {
+      if (this.$route.path != "/app/user/cat/create") {
+        this.$router.push("/app/user/cat/create");
+      }
+    },
+    editCat() {
+      if (this.$route.path != "/app/user/cat/edit") {
+        this.$router.push("/app/user/cat/edit");
+      }
+    },
+    createPro() {
+      if (this.$route.path != "/app/user/pro/create") {
+        this.$router.push("/app/user/pro/create");
+      }
+    },
+    notifi() {
+      if (this.$route.path != "/app/user/notifications") {
+        this.$router.push("/app/user/notifications");
+      }
+    },
+    async logout() {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/logout", {
+          method: "DELETE",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        if (response.status === 200) {
+          const data = await response.json();
+          this.$store.commit("setAuthenticatedUser", "");
+          localStorage.removeItem("token");
+          if (this.$route.path != "/app") {
+            this.$router.push("/app");
+          }
+        } else {
+          const data = await response.json();
+          alert(data.message);
         }
+      } catch (error) {
+        console.error(error);
+      }
     },
-    mounted() {
-        const source = new EventSource("/stream");
-        source.addEventListener(this.$store.state.authenticatedUser.email, event => {
-            let data = JSON.parse(event.data);
-            alert(data.message)
-        }, false);
-        this.$store.dispatch('fetchCategories')
-        this.$store.dispatch('fetchAuthUser')
-        this.$store.dispatch('fetchCartItems')
-    }
+    stats() {
+      if (this.$route.path != "/app/user/report") {
+        this.$router.push("/app/user/report");
+        this.$store.dispatch("fetchCategories");
+      }
+    },
+    async searchByCat(catName, catId) {
+      this.checkedValue = catId;
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:5000/search/by/catgory",
+          {
+            method: "POST",
+            headers: {
+              "Content-type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({
+              query: catName,
+            }),
+          }
+        );
+        if (response.status === 200) {
+          const data = await response.json();
+          this.$store.commit("setProducts", data.pro);
+          console.log(data.resource);
+        } else {
+          const data = await response.json();
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    shareViaWhatsApp() {
+      // Replace 'your_share_message' with the message you want to share
+      const message = encodeURIComponent(
+        "Check out this amazing app! Join now."
+      );
+
+      // Replace 'your_web_url' with the URL of your web application
+      const url = encodeURIComponent("http://127.0.0.1:5000/");
+
+      // Construct the WhatsApp share URL
+      const whatsappUrl = `https://api.whatsapp.com/send?text=${message}%20${url}`;
+
+      // Open a new window with the WhatsApp share URL
+      window.open(whatsappUrl, "_blank");
+    },
+    async search() {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/search/for", {
+          method: "POST",
+          headers: {
+            "Content-type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+          body: JSON.stringify({
+            query: this.query,
+          }),
+        });
+        if (response.status === 200) {
+          const data = await response.json();
+          this.$store.commit("setCategories", data.cat);
+          this.$store.commit("setProducts", data.pro);
+          console.log(data.resource);
+        } else {
+          const data = await response.json();
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    cart() {
+      if (this.$route.path != "/app/user/CartCompo") {
+        this.$router.push("/app/user/CartCompo");
+      }
+    },
+    orders() {
+      if (this.$route.path != "/app/user/your/orders") {
+        this.$router.push("/app/user/your/orders");
+      }
+    },
+    change() {
+      if (this.picUpdate == false) {
+        this.picUpdate = true;
+      }
+    },
+    notifi() {
+      // Your notification logic here
+    },
+    async updatePic() {
+      const formData = new FormData();
+      formData.append("image", this.profilePic);
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:5000/update/profile/" +
+            this.$store.state.authenticatedUser.id,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: formData,
+          }
+        );
+        if (response.status === 201) {
+          const data = await response.json();
+          console.log(data.resource);
+          this.$store.commit("setAuthenticatedUser", data.resource);
+          this.picUpdate = false;
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+  },
+  mounted() {
+    const source = new EventSource("/stream");
+    source.addEventListener(
+      this.$store.state.authenticatedUser.email,
+      (event) => {
+        let data = JSON.parse(event.data);
+        alert(data.message);
+      },
+      false
+    );
+    this.$store.dispatch("fetchCategories");
+
+    this.$store.dispatch("fetchCartItems");
+  },
 };
-export default UserApp; 
+export default UserApp;

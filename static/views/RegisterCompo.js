@@ -1,5 +1,5 @@
 const RegisterCompo = {
-  name: 'RegisterCompo',
+  name: "RegisterCompo",
   template: `
   <div class="row justify-content-center m-3 text-color-light">
   <div class="card bg-light" style="width: 18rem;">
@@ -39,41 +39,41 @@ const RegisterCompo = {
     `,
   data() {
     return {
-      email: '',
-      name: '',
-      password: '',
-      role: '',
-      message: ''
-    }
+      email: "",
+      name: "",
+      password: "",
+      role: "",
+      message: "",
+    };
   },
   methods: {
     closeCard() {
-      if (this.$route.path != '/app') {
-        this.$router.push('/app')
+      if (this.$route.path != "/app") {
+        this.$router.push("/app");
       }
     },
     async submitForm() {
       try {
-        const response = await fetch('http://127.0.0.1:5000/signup', {
-          method: 'POST',
+        const response = await fetch("http://127.0.0.1:5000/signup", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            'Accept': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+            "Content-Type": "application/json",
+            Accept: "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({
-            "email": this.email,
-            "name": this.name,
-            "password": this.password,
-            "role": this.role
+            email: this.email,
+            name: this.name,
+            password: this.password,
+            role: this.role,
           }),
         });
         const data = await response.json();
         if (response.status === 201) {
           alert(data.message);
-          if (this.$route.path != '/login') {
-            this.$router.push('/login')
-            this.closeCard()
+          if (this.$route.path != "/login") {
+            this.$router.push("/login");
+            this.closeCard();
           }
         } else if (response.status === 409) {
           alert(data.error);
@@ -82,6 +82,6 @@ const RegisterCompo = {
         console.error(error);
       }
     },
-  }
+  },
 };
 export default RegisterCompo;

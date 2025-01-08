@@ -932,32 +932,6 @@ def login_post():
                        'resource': user_data}), 200
 
 
-@auth.route('/decline/<int:id>', methods=['GET'])
-@jwt_required()
-@role_required(['admin'])
-def decline(id):
-    req = RequestResponse.query.filter_by(id=id).first()
-    if req:
-        req.status = 'declined'
-        db.session.commit()
-        return jsonify({'message': 'Request declined'}), 200
-    else:
-        return jsonify({'message': 'Not found'}), 404
-
-
-@auth.route('/delete/man/<int:id>', methods=['DELETE'])
-@jwt_required()
-@role_required(['admin'])
-def delete_man(id):
-    man = User.query.filter_by(id=id).first()
-    if man:
-        db.session.delete(man)
-        db.session.commit()
-        return jsonify({'message': 'Deleted manager', 'resource': id}), 200
-    else:
-        return jsonify({'message': 'Not found'}), 404
-
-
 @auth.route('/signup', methods=['POST'])
 def signup_post():
     data = request.get_json()
@@ -1002,6 +976,32 @@ def signup_post():
         return jsonify(
             {'message': 'User registered successfully',
              'data': verified_data}), 201
+
+
+@auth.route('/decline/<int:id>', methods=['GET'])
+@jwt_required()
+@role_required(['admin'])
+def decline(id):
+    req = RequestResponse.query.filter_by(id=id).first()
+    if req:
+        req.status = 'declined'
+        db.session.commit()
+        return jsonify({'message': 'Request declined'}), 200
+    else:
+        return jsonify({'message': 'Not found'}), 404
+
+
+@auth.route('/delete/man/<int:id>', methods=['DELETE'])
+@jwt_required()
+@role_required(['admin'])
+def delete_man(id):
+    man = User.query.filter_by(id=id).first()
+    if man:
+        db.session.delete(man)
+        db.session.commit()
+        return jsonify({'message': 'Deleted manager', 'resource': id}), 200
+    else:
+        return jsonify({'message': 'Not found'}), 404
 
 
 # Endpoint for revoking the current users access token. Save the JWTs unique

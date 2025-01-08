@@ -1,5 +1,5 @@
 const CreateCatCompo = {
-  name: 'CreateCatCompo',
+  name: "CreateCatCompo",
   template: `
   <div class="row justify-content-center m-3 text-color-light">
   <div class="card bg-light" style="width: 18rem;">
@@ -25,52 +25,50 @@ const CreateCatCompo = {
     `,
   data() {
     return {
-      name:'',
-      message: ''
-    }
+      name: "",
+      message: "",
+    };
   },
   methods: {
-    closeCard(){
-      if(this.$store.state.authenticatedUser.role==='admin'){
-        if(this.$route.path!='/app/admin'){
-          this.$router.push('/app/admin')
+    closeCard() {
+      if (this.$store.state.authenticatedUser.role === "admin") {
+        if (this.$route.path != "/app/admin") {
+          this.$router.push("/app/admin");
         }
-      }
-      else{
-        if(this.$route.path!='/app/manager'){
-          this.$router.push('/app/manager')
+      } else {
+        if (this.$route.path != "/app/manager") {
+          this.$router.push("/app/manager");
         }
       }
     },
     async addcategory() {
       try {
-        const response = await fetch('http://127.0.0.1:5000/add/cat',{
-          method: 'POST',
+        const response = await fetch("http://127.0.0.1:5000/add/cat", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({
-            name: this.name
+            name: this.name,
           }),
         });
         if (response.status === 201) {
           const data = await response.json();
-          console.log(data.resource)
-          if(this.$store.state.authenticatedUser.role==='admin'){
-            this.$store.commit('addCat', data.resource)
+          console.log(data.resource);
+          if (this.$store.state.authenticatedUser.role === "admin") {
+            this.$store.commit("addCat", data.resource);
+          } else {
+            this.$store.commit("addNoti", data.resource);
           }
-          else{
-            this.$store.commit('addNoti', data.resource)
-          }          
-          this.closeCard()
+          this.closeCard();
         } else {
           alert(data.message);
         }
       } catch (error) {
         console.error(error);
       }
-    }
+    },
   },
 };
 export default CreateCatCompo;

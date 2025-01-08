@@ -1,5 +1,5 @@
 const OrderCompo = {
-  name: 'OrderCompo',
+  name: "OrderCompo",
   template: `
   <div class="container mt-5">
   <div class="row item-container">
@@ -25,47 +25,50 @@ const OrderCompo = {
 </div>
     `,
 
-    data() {
-      return {
-        cartItems: [
-          { name: 'Item 1', price: 10.99, quantity: 2 },
-          { name: 'Item 2', price: 5.99, quantity: 3 },
-          { name: 'Item 2', price: 5.99, quantity: 3 },
-          { name: 'Item 2', price: 5.99, quantity: 3 },
-          { name: 'Item 2', price: 5.99, quantity: 3 }
-          // Add more items as needed
+  data() {
+    return {
+      cartItems: [
+        { name: "Item 1", price: 10.99, quantity: 2 },
+        { name: "Item 2", price: 5.99, quantity: 3 },
+        { name: "Item 2", price: 5.99, quantity: 3 },
+        { name: "Item 2", price: 5.99, quantity: 3 },
+        { name: "Item 2", price: 5.99, quantity: 3 },
+        // Add more items as needed
       ],
-      }
-    },
+    };
+  },
   methods: {
     async rate(id, value) {
-        try {
-          const response = await fetch('http://127.0.0.1:5000/update/order/'+id, {
-            method: 'PUT',
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:5000/update/order/" + id,
+          {
+            method: "PUT",
             headers: {
-              'Content-Type': 'Application/json',
-              Authorization: `Bearer ${localStorage.getItem('token')}`
+              "Content-Type": "Application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
             },
             body: JSON.stringify({
-                'value':value
-            })
-          });
-          if (response.status === 201) {
-            const data = await response.json();
-            console.log(data, "products fetched")
-            this.$store.commit('updateOrder', data.resource)
-            alert("Thank you for rating!")
-          } else {
-            const data = await response.json();
-            alert(data.message);
+              value: value,
+            }),
           }
-        } catch (error) {
-          console.error(error);
+        );
+        if (response.status === 201) {
+          const data = await response.json();
+          console.log(data, "products fetched");
+          this.$store.commit("updateOrder", data.resource);
+          alert("Thank you for rating!");
+        } else {
+          const data = await response.json();
+          alert(data.message);
         }
+      } catch (error) {
+        console.error(error);
+      }
     },
   },
-  mounted(){
-    this.$store.dispatch('fetchOrders')
-  }
+  mounted() {
+    this.$store.dispatch("fetchOrders");
+  },
 };
 export default OrderCompo;

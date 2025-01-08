@@ -1,5 +1,5 @@
 const sendWarning = {
-  name: 'sendWarning',
+  name: "sendWarning",
   template: `
   <div class="row justify-content-center m-3 text-color-light">
   <div class="card bg-light" style="width: 36rem;">
@@ -24,82 +24,81 @@ const sendWarning = {
   </div>
 </div>
     `,
-    data() {
-      return {
-        managers: {
-          id: '',
-          name: '',
-          email: '',
-        },
-        message: ''
-    }
+  data() {
+    return {
+      managers: {
+        id: "",
+        name: "",
+        email: "",
+      },
+      message: "",
+    };
   },
-    methods: {
-      closeCard(){
-        if(this.$store.state.authenticatedUser.role==='admin'){
-          if(this.$route.path!='/app/admin'){
-            this.$router.push('/app/admin')
-          }
+  methods: {
+    closeCard() {
+      if (this.$store.state.authenticatedUser.role === "admin") {
+        if (this.$route.path != "/app/admin") {
+          this.$router.push("/app/admin");
         }
-        else{
-          if(this.$route.path!='/app/manager'){
-            this.$router.push('/app/manager')
-          }
+      } else {
+        if (this.$route.path != "/app/manager") {
+          this.$router.push("/app/manager");
         }
-      },      
-      async fetchManagers() {
+      }
+    },
+    async fetchManagers() {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/send/alert", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        if (response.status === 200) {
+          const data = await response.json();
+          console.log(data, "managers alerts");
+          this.managers = data;
+          console.log(this.managers, "printed managers");
+        } else if (response.status === 404) {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },
+    async sendWarning() {
+      if (confirm("Are you sure?")) {
         try {
-          const response = await fetch('http://127.0.0.1:5000/send/alert',{
-            method: 'GET',
+          const response = await fetch("http://127.0.0.1:5000/send/alert", {
+            method: "POST",
             headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem('token')}`
-            }
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: JSON.stringify({
+              id: this.managers.id,
+              message: this.message,
+              email: this.managers.email,
+            }),
           });
           if (response.status === 200) {
             const data = await response.json();
-            console.log(data, "managers alerts")
-            this.managers = data
-            console.log(this.managers, "printed managers")
-          } else if(response.status === 404) {
+            console.log(data, "printed data");
+            alert(data.message);
+            this.closeCard();
+          } else {
+            const data = await response.json();
             alert(data.message);
           }
         } catch (error) {
           console.error(error);
         }
-      },
-      async sendWarning() {
-        if(confirm("Are you sure?")){
-          try {
-            const response = await fetch('http://127.0.0.1:5000/send/alert',{
-              method: 'POST',
-              headers: {
-                'Content-Type': 'application/json',
-                Authorization: `Bearer ${localStorage.getItem('token')}`
-              },
-              body: JSON.stringify({
-                'id': this.managers.id,
-                'message': this.message,
-                'email': this.managers.email
-              }),
-            });
-            if (response.status === 200) {
-              const data = await response.json();
-              console.log(data, "printed data")
-              alert(data.message)               
-              this.closeCard()
-            } else {
-              const data = await response.json();
-              alert(data.message);
-            }
-          } catch (error) {
-            console.error(error);
-          }
-        }
-      }   
+      }
     },
-    mounted(){
-      this.fetchManagers()
-    } 
+  },
+  mounted() {
+    this.fetchManagers();
+  },
 };
 export default sendWarning;

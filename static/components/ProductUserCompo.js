@@ -1,5 +1,5 @@
 const ProductUserCompo = {
-  name: 'ProductUserCompo',
+  name: "ProductUserCompo",
   template: `
   <div class="container d-flex justify-content-center mt-2" style="margin-bottom: 100px; overflow-y: scroll;">
     <div class="row gap-2">
@@ -21,44 +21,43 @@ const ProductUserCompo = {
     </div>
 </div>
   `,
-  methods:{
+  methods: {
     async addToCart(id, name, rpu) {
       try {
-        const response = await fetch('http://127.0.0.1:5000/add/to/cart',{
-          method: 'POST',
+        const response = await fetch("http://127.0.0.1:5000/add/to/cart", {
+          method: "POST",
           headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({
-            "id":id,
-            'name':name,
-            'rpu':rpu
+            id: id,
+            name: name,
+            rpu: rpu,
           }),
         });
         if (response.status === 201) {
           const data = await response.json();
-          console.log(data.resource)
-          this.$store.commit('addToCart', data.resource)      
-        } else if(response.status===209) {
+          console.log(data.resource);
+          this.$store.commit("addToCart", data.resource);
+        } else if (response.status === 209) {
           const data = await response.json();
           alert(data.message);
-          this.$store.commit('updateToCart', data.resource)
-        }else if(response.status===200) {
+          this.$store.commit("updateToCart", data.resource);
+        } else if (response.status === 200) {
           const data = await response.json();
           alert(data.message);
-        }
-        else {
+        } else {
           const data = await response.json();
           alert(data.message);
         }
       } catch (error) {
         console.error(error);
       }
-    }
+    },
   },
-  mounted(){
-    this.$store.dispatch('fetchProducts')
-  }  
+  mounted() {
+    this.$store.dispatch("fetchProducts");
+  },
 };
-export default ProductUserCompo; 
+export default ProductUserCompo;

@@ -1,5 +1,5 @@
 const ReportCompo = {
-  name: 'ReportCompo',
+  name: "ReportCompo",
   template: `
   <div class="container mt-5">
       <h2 class="text-center mb-4">Report</h2>
@@ -39,30 +39,29 @@ const ReportCompo = {
   },
   methods: {
     viewCSV() {
-      fetch('http://127.0.0.1:5000/get/report/data')
-        .then(response => response.json())
-        .then(data => {
-          this.csvHeaders = data.header,
-          this.csvData = data.content
+      fetch("http://127.0.0.1:5000/get/report/data")
+        .then((response) => response.json())
+        .then((data) => {
+          (this.csvHeaders = data.header), (this.csvData = data.content);
           this.csvTableVisible = true;
         })
-        .catch(error => console.error('Error fetching CSV file:', error));
+        .catch((error) => console.error("Error fetching CSV file:", error));
     },
     downloadCSV() {
-    fetch('http://127.0.0.1:5000/get/report/download')
-      .then(response => response.text())
-      .then(csvData => {
-        const blob = new Blob([csvData], { type: 'text/csv' });
-        const link = document.createElement('a');
-        link.href = window.URL.createObjectURL(blob);
-        link.download = 'report.csv';
-        link.click();
-      })
-      .catch(error => {
-        console.error('Error fetching CSV file:', error);
-      });
-    }
-  }
+      fetch("http://127.0.0.1:5000/get/report/download")
+        .then((response) => response.text())
+        .then((csvData) => {
+          const blob = new Blob([csvData], { type: "text/csv" });
+          const link = document.createElement("a");
+          link.href = window.URL.createObjectURL(blob);
+          link.download = "report.csv";
+          link.click();
+        })
+        .catch((error) => {
+          console.error("Error fetching CSV file:", error);
+        });
+    },
+  },
 };
 
-export default ReportCompo; 
+export default ReportCompo;

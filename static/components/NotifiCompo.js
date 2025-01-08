@@ -1,5 +1,5 @@
 const NotifiCompo = {
-  name: 'NotifiCompo',
+  name: "NotifiCompo",
   template: `
   <div class="container">
     <div class="row">
@@ -28,16 +28,16 @@ const NotifiCompo = {
   methods: {
     async decline(id) {
       try {
-        const response = await fetch('http://127.0.0.1:5000/decline/'+id, {
-          method: 'GET',
+        const response = await fetch("http://127.0.0.1:5000/decline/" + id, {
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         if (response.status === 200) {
           const data = await response.json();
-          this.$store.commit('deleteNotification', id)
+          this.$store.commit("deleteNotification", id);
           alert(data.message);
         } else {
           const data = await response.json();
@@ -49,33 +49,32 @@ const NotifiCompo = {
     },
     async approve(id) {
       try {
-        const response = await fetch('http://127.0.0.1:5000/approve/'+id, {
-          method: 'GET',
+        const response = await fetch("http://127.0.0.1:5000/approve/" + id, {
+          method: "GET",
           headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`,
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
         });
         if (response.status === 201) {
           const data = await response.json();
-          console.log("added requested category", data.type=='category')
-          if(data.type=='manager')
-            this.$store.commit('addManager', data.resource)
-          else if (data.type==='category'){
-            this.$store.commit('addCat', data.resource)
-            console.log("added requested category")
-          }
-          else if (data.type=='product')
-            this.$store.commit('addProduct', data.resource)
-          else if (data.type=='category update')
-            this.$store.commit('updateCategory', data.resource)
-          else if (data.type=='category delete')
-            this.$store.commit('deleteCategory', data.resource.id)
-          else if (data.type=='product update')
-            this.$store.commit('updateProduct', data.resource)
-          else if (data.type=='product delete')
-            this.$store.commit('deleteProduct', data.resource)
-          this.$store.commit('deleteNotification', id)
+          console.log("added requested category", data.type == "category");
+          if (data.type == "manager")
+            this.$store.commit("addManager", data.resource);
+          else if (data.type === "category") {
+            this.$store.commit("addCat", data.resource);
+            console.log("added requested category");
+          } else if (data.type == "product")
+            this.$store.commit("addProduct", data.resource);
+          else if (data.type == "category update")
+            this.$store.commit("updateCategory", data.resource);
+          else if (data.type == "category delete")
+            this.$store.commit("deleteCategory", data.resource.id);
+          else if (data.type == "product update")
+            this.$store.commit("updateProduct", data.resource);
+          else if (data.type == "product delete")
+            this.$store.commit("deleteProduct", data.resource);
+          this.$store.commit("deleteNotification", id);
           alert(data.message);
         } else {
           const data = await response.json();

@@ -1,5 +1,5 @@
 const HomeView = {
-  name: 'HomeView',
+  name: "HomeView",
   template: `
     <div>
       <header class="bg-success text-white text-center py-3">
@@ -28,18 +28,16 @@ const HomeView = {
   `,
   methods: {
     login() {
-      if (this.$route.path !== '/app/login') {
-        this.$router.push('/app/login')
+      if (this.$route.path !== "/app/login") {
+        this.$router.push("/app/login");
       }
     },
     register() {
-      if (this.$route.path !== '/app/register') {
-        this.$router.push('/app/register')
+      if (this.$route.path !== "/app/register") {
+        this.$router.push("/app/register");
       }
-    }
+    },
   },
-  mounted() {
-    this.$store.dispatch('fetchAuthUser')
-  }
+  mounted() {},
 };
 export default HomeView;

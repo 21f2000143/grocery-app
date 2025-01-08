@@ -1,5 +1,5 @@
 const ProductCompo = {
-  name: 'ProductCompo',
+  name: "ProductCompo",
   template: `
   <div class="container d-flex justify-content-center mt-2">
     <div class="row gap-2">
@@ -24,13 +24,13 @@ const ProductCompo = {
   `,
   methods: {
     editPro(id) {
-      if (this.$route.path != '/app/admin/pro/edit/' + id) {
-        this.$router.push('/app/admin/pro/edit/' + id)
+      if (this.$route.path != "/app/admin/pro/edit/" + id) {
+        this.$router.push("/app/admin/pro/edit/" + id);
       }
     },
   },
   mounted() {
-    this.$store.dispatch('fetchProducts')
-  }
+    this.$store.dispatch("fetchProducts");
+  },
 };
-export default ProductCompo; 
+export default ProductCompo;

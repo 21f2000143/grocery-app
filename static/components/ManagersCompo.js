@@ -1,5 +1,5 @@
 const ManagersCompo = {
-  name: 'ManagersCompo',
+  name: "ManagersCompo",
   template: `
   <div class="container">
     <div class="row">
@@ -30,66 +30,69 @@ const ManagersCompo = {
     `,
   data() {
     return {
-      email: '',
-      name: '',
-      password: '',
-      role: '',
-      message: ''
-    }
+      email: "",
+      name: "",
+      password: "",
+      role: "",
+      message: "",
+    };
   },
   methods: {
-    warn(){
-      if(this.$route.path!='/app/admin/warning'){
-        this.$router.push('/app/admin/warning')
+    warn() {
+      if (this.$route.path != "/app/admin/warning") {
+        this.$router.push("/app/admin/warning");
       }
     },
     submitForm() {
-      fetch('http://127.0.0.1:5000/signup', {
-        method: 'POST',
+      fetch("http://127.0.0.1:5000/signup", {
+        method: "POST",
         headers: {
-          'Content-Type': 'application/json',
-          'Accept': 'application/json',
-          Authorization: `Bearer ${localStorage.getItem('token')}`
+          "Content-Type": "application/json",
+          Accept: "application/json",
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
         },
         body: JSON.stringify({
-          "email": this.email,
-          "name": this.name,
-          "password": this.password,
-          "role": this.role
+          email: this.email,
+          name: this.name,
+          password: this.password,
+          role: this.role,
         }),
       })
-        .then(response => {
+        .then((response) => {
           if (response.status == 200) {
-            if(this.$route.path!='/app/login'){
-              this.$router.push('/app/login')
+            if (this.$route.path != "/app/login") {
+              this.$router.push("/app/login");
             }
           }
           if (response.status == 409) {
             this.message = "User already exists";
           }
-          return response.json()
+          return response.json();
         })
-        .then(data => {
-          console.log('Server response:', data);
+        .then((data) => {
+          console.log("Server response:", data);
         })
-        .catch(error => {
-          console.error('Error sending data:', error);
+        .catch((error) => {
+          console.error("Error sending data:", error);
         });
     },
     async deletemanager(id) {
-      if(confirm("Are you sure?")){
+      if (confirm("Are you sure?")) {
         try {
-          const response = await fetch('http://127.0.0.1:5000/delete/man/'+id,{
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem('token')}`
-            },
-          });
+          const response = await fetch(
+            "http://127.0.0.1:5000/delete/man/" + id,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
           if (response.status === 200) {
             const data = await response.json();
-            console.log(data, "printed data")
-            this.$store.commit('deleteManager', data.resource)
+            console.log(data, "printed data");
+            this.$store.commit("deleteManager", data.resource);
             alert(data.message);
           } else {
             alert(data.message);
@@ -98,10 +101,10 @@ const ManagersCompo = {
           console.error(error);
         }
       }
-    }    
+    },
   },
-  mounted(){
-    this.$store.dispatch('fetchManagers')
-  }
+  mounted() {
+    this.$store.dispatch("fetchManagers");
+  },
 };
 export default ManagersCompo;

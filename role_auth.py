@@ -1,6 +1,9 @@
 from functools import wraps
 from flask import render_template
-from flask_jwt_extended import jwt_required, current_user
+from flask_jwt_extended import (
+    jwt_required,
+    current_user
+)
 
 
 def role_required(roles: list):

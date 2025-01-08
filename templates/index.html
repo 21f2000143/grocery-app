@@ -1,173 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Eat Fresh</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <link
+      rel="stylesheet"
+      href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+      crossorigin="anonymous"
+    />
+    <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
+    <script src="https://unpkg.com/vue-router@4.0.15/dist/vue-router.global.js"></script>
+    <script src="https://unpkg.com/vuex@4.0.0/dist/vuex.global.js"></script>
+    <link rel="stylesheet" href="../static/style.css" />
+  </head>
 
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Eat Fresh</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
-    crossorigin="anonymous" />
-  <script src="https://unpkg.com/vue@3/dist/vue.global.js"></script>
-  <script src="https://unpkg.com/vue-router@4.0.15/dist/vue-router.global.js"></script>
-  <script src="https://unpkg.com/vuex@4.0.0/dist/vuex.global.js"></script>
-  <link rel="stylesheet" href="../static/style.css">
-</head>
+  <body>
+    <div id="app">
+      <component is="router-view"></component>
+    </div>
 
-<body>
-  <div id="app">
-    <component is="router-view"></component>
-  </div>
+    <script type="module">
+      import store from "../static/store/index.js";
+      import router from "../static/router/index.js";
 
-  <script type="module">
-    import store from "../static/store/index.js";
-    import HomeView from "../static/views/HomeView.js";
-    import UserApp from "../static/views/UserApp.js";
-    import AdminApp from "../static/views/AdminApp.js";
-    import ManagerApp from "../static/views/ManagerApp.js";
-    import RegisterCompo from "../static/views/RegisterCompo.js";
-    import LoginCompo from "../static/views/LoginCompo.js";
-    import MainApp from "../static/views/MainApp.js";
-    import CreateCatCompo from "../static/components/CreateCatCompo.js";
-    import NotFound from "../static/components/NotFound.js";
-    import CreateProCompo from "../static/components/CreateProCompo.js";
-    import EditCatCompo from "../static/components/EditCatCompo.js";
-    import EditProCompo from "../static/components/EditProCompo.js";
-    import ProductCompo from "../static/components/ProductCompo.js";
-    import ProductUserCompo from "../static/components/ProductUserCompo.js";
-    import ManagersCompo from "../static/components/ManagersCompo.js";
-    import NotifiCompo from "../static/components/NotifiCompo.js";
-    import NotifiManCompo from "../static/components/NotifiManCompo.js";
-    import ReportCompo from "../static/components/ReportCompo.js";
-    import CartCompo from "../static/components/CartCompo.js";
-    import OrderCompo from "../static/components/OrderCompo.js";
-    import sendWarning from "../static/components/sendWarning.js";
+      const { createApp } = Vue;
+      const app = createApp({});
 
-    const routes = [
-      { path: '/app', component: HomeView },
-      { path: '/app/login', component: LoginCompo },
-      { path: '/app/register', component: RegisterCompo },
-      // Catch-all route for undefined paths
-      {
-        path: '/:pathMatch(.*)*', // Use '*' for Vue Router 3
-        name: 'NotFound',
-        component: NotFound,
-      },
-
-      {
-        path: '/app/admin', component: AdminApp, children: [
-          { path: '/app/admin', component: ProductCompo },
-          { path: '/app/admin/cat/create', component: CreateCatCompo },
-          { path: '/app/admin/cat/edit/:id', component: EditCatCompo },
-          { path: '/app/admin/pro/create', component: CreateProCompo },
-          { path: '/app/admin/pro/edit/:id', component: EditProCompo },
-          { path: '/app/admin/managers', component: ManagersCompo },
-          { path: '/app/admin/notifications', component: NotifiCompo },
-          { path: '/app/admin/report', component: ReportCompo },
-          { path: '/app/admin/warning', component: sendWarning }
-        ]
-      },
-      {
-        path: '/app/manager', component: ManagerApp, children: [
-          { path: '/app/manager', component: ProductCompo },
-          { path: '/app/manager/cat/create', component: CreateCatCompo },
-          { path: '/app/manager/cat/edit/:id', component: EditCatCompo },
-          { path: '/app/manager/pro/create', component: CreateProCompo },
-          { path: '/app/manager/pro/edit/:id', component: EditProCompo },
-          { path: '/app/manager/notifications', component: NotifiManCompo },
-          { path: '/app/manager/report', component: ReportCompo }
-        ]
-      },
-      {
-        path: '/app/user', component: UserApp, children: [
-          { path: '/app/user', component: ProductUserCompo },
-          { path: '/app/user/CartCompo', component: CartCompo },
-          { path: '/app/user/your/orders', component: OrderCompo },
-          { path: '/app/user/pro/create', component: CreateProCompo },
-          { path: '/app/user/pro/edit', component: EditProCompo },
-          { path: '/app/user/notifications', component: NotifiCompo },
-          { path: '/app/user/report', component: ReportCompo }
-        ]
-      }
-    ];
-
-
-    const { createApp } = Vue
-    const app = createApp({
-    })
-
-    const { createRouter, createWebHistory } = VueRouter
-    const router = createRouter({
-      history: createWebHistory(),
-      routes // short for `routes: routes`
-    })
-    app.use(router)
-    app.use(store)
-    app.component('HomeView', HomeView)
-    app.component('UserApp', UserApp)
-    app.component('AdminApp', AdminApp)
-    app.component('ManagerApp', ManagerApp)
-    app.component('RegisterCompo', RegisterCompo)
-    app.component('LoginCompo', LoginCompo)
-    app.component('MainApp', MainApp)
-    app.component('CreateCatCompo', CreateCatCompo)
-    app.component('CreateProCompo', CreateProCompo)
-    app.component('EditCatCompo', EditCatCompo)
-    app.component('EditProCompo', EditProCompo)
-    app.component('ProductCompo', ProductCompo)
-    app.component('ProductUserCompo', ProductUserCompo)
-    app.component('ManagersCompo', ManagersCompo)
-    app.component('NotifiCompo', NotifiCompo)
-    app.component('NotifiManCompo', NotifiManCompo)
-    app.component('ReportCompo', ReportCompo)
-    app.component('CartCompo', CartCompo)
-    app.component('OrderCompo', OrderCompo)
-    app.component('sendWarning', sendWarning)
-    var tooltipTriggerList = [].slice.call(document.querySelectorAll('[data-bs-toggle="tooltip"]'));
-    var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
-      return new bootstrap.Tooltip(tooltipTriggerEl);
-    });
-    app.mount('#app')
-
-    async function isAuthenticated() {
-      try {
-        const response = await fetch('http://127.0.0.1:5000/auth/user', {
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`
-          },
-        });
-        if (response.status === 200) {
-          const data = await response.json();
-          console.log(data, "categories fetched")
-          return true;
-        } else {
-          const data = await response.json();
-          console.log(data.message);
-          return false;
-        }
-      } catch (error) {
-        console.error(error);
-        return false;
-      }
-    };
-    // Adding Vue Router Guard
-    router.beforeEach((to, from, next) => {
-      if (to.path == '/app/login') {
-        next()
-      } else if (to.path == '/app') {
-        next()
-      } else if (to.path == '/app/register') {
-        next()
-      } else if (!localStorage.getItem('token') || !isAuthenticated()) { // when both conditions are True
-        next({ path: '/app/login' })
-      } else {
-        next()
-      }
-    })
-  </script>
-</body>
-
+      app.use(router);
+      app.use(store);
+      var tooltipTriggerList = [].slice.call(
+        document.querySelectorAll('[data-bs-toggle="tooltip"]')
+      );
+      var tooltipList = tooltipTriggerList.map(function (tooltipTriggerEl) {
+        return new bootstrap.Tooltip(tooltipTriggerEl);
+      });
+      app.mount("#app");
+    </script>
+  </body>
 </html>

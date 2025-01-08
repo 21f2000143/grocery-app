@@ -1,5 +1,5 @@
 const EditCatCompo = {
-  name: 'EditCatCompo',
+  name: "EditCatCompo",
   template: `
   <div class="row justify-content-center m-3 text-color-light">
   <div class="card bg-light" style="width: 18rem;">
@@ -28,36 +28,38 @@ const EditCatCompo = {
     `,
   data() {
     return {
-      name:'',
-      message: ''
-    }
+      name: "",
+      message: "",
+    };
   },
   methods: {
-    closeCard(){
-      if(this.$store.state.authenticatedUser.role==='admin'){
-        if(this.$route.path!='/app/admin'){
-          this.$router.push('/app/admin')
+    closeCard() {
+      if (this.$store.state.authenticatedUser.role === "admin") {
+        if (this.$route.path != "/app/admin") {
+          this.$router.push("/app/admin");
         }
-      }
-      else{
-        if(this.$route.path!='/app/manager'){
-          this.$router.push('/app/manager')
+      } else {
+        if (this.$route.path != "/app/manager") {
+          this.$router.push("/app/manager");
         }
       }
     },
     async fetchcategory() {
       try {
-        const response = await fetch('http://127.0.0.1:5000/update/'+this.$route.params.id,{
-          method: 'GET',
-          headers: {
-            'Content-Type': 'application/json',
-            Authorization: `Bearer ${localStorage.getItem('token')}`
+        const response = await fetch(
+          "http://127.0.0.1:5000/update/" + this.$route.params.id,
+          {
+            method: "GET",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
           }
-        });
+        );
         if (response.status === 200) {
           const data = await response.json();
-          this.name = data.name
-        } else if(response.status === 404) {
+          this.name = data.name;
+        } else if (response.status === 404) {
           alert(data.message);
         }
       } catch (error) {
@@ -65,28 +67,30 @@ const EditCatCompo = {
       }
     },
     async updatecategory() {
-      if(confirm("Are you sure?")){
+      if (confirm("Are you sure?")) {
         try {
-          const response = await fetch('http://127.0.0.1:5000/update/'+this.$route.params.id,{
-            method: 'PUT',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem('token')}`
-            },
-            body: JSON.stringify({
-              name: this.name
-            }),
-          });
+          const response = await fetch(
+            "http://127.0.0.1:5000/update/" + this.$route.params.id,
+            {
+              method: "PUT",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+              body: JSON.stringify({
+                name: this.name,
+              }),
+            }
+          );
           if (response.status === 201) {
             const data = await response.json();
-            console.log(data, "printed data")
-            if(this.$store.state.authenticatedUser.role==='admin'){
-              this.$store.commit('updateCategory', data.resource)
+            console.log(data, "printed data");
+            if (this.$store.state.authenticatedUser.role === "admin") {
+              this.$store.commit("updateCategory", data.resource);
+            } else {
+              this.$store.commit("addNoti", data.resource);
             }
-            else{
-              this.$store.commit('addNoti', data.resource)
-            }               
-            this.closeCard()
+            this.closeCard();
           } else {
             const data = await response.json();
             alert(data.message);
@@ -97,25 +101,27 @@ const EditCatCompo = {
       }
     },
     async deletecategory() {
-      if(confirm("Are you sure?")){
+      if (confirm("Are you sure?")) {
         try {
-          const response = await fetch('http://127.0.0.1:5000/update/'+this.$route.params.id,{
-            method: 'DELETE',
-            headers: {
-              'Content-Type': 'application/json',
-              Authorization: `Bearer ${localStorage.getItem('token')}`
-            },
-          });
+          const response = await fetch(
+            "http://127.0.0.1:5000/update/" + this.$route.params.id,
+            {
+              method: "DELETE",
+              headers: {
+                "Content-Type": "application/json",
+                Authorization: `Bearer ${localStorage.getItem("token")}`,
+              },
+            }
+          );
           if (response.status === 201) {
             const data = await response.json();
-            console.log(data, "printed data")
-            if(this.$store.state.authenticatedUser.role==='admin'){
-              this.$store.commit('deleteCategory', data.resource.id)
+            console.log(data, "printed data");
+            if (this.$store.state.authenticatedUser.role === "admin") {
+              this.$store.commit("deleteCategory", data.resource.id);
+            } else {
+              this.$store.commit("addNoti", data.resource);
             }
-            else{
-              this.$store.commit('addNoti', data.resource)
-            }              
-            this.closeCard()
+            this.closeCard();
           } else {
             const data = await response.json();
             alert(data.message);
@@ -124,10 +130,10 @@ const EditCatCompo = {
           console.error(error);
         }
       }
-    }
+    },
   },
-  mounted(){
-    this.fetchcategory()
-  }
+  mounted() {
+    this.fetchcategory();
+  },
 };
 export default EditCatCompo;

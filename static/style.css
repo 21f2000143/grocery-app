@@ -94,7 +94,7 @@ footer {
 
 /* Style for the button to buy again */
 .buy-again-btn {
-  background-color: #4CAF50;
+  background-color: #4caf50;
   color: white;
   padding: 10px;
   text-align: center;
@@ -114,7 +114,7 @@ footer {
 }
 
 .star {
-  color: #FFD700;
+  color: #ffd700;
   font-size: 20px;
   margin: 0 2px;
   cursor: pointer;
