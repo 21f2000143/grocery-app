@@ -237,9 +237,22 @@ def approve(id):
         return jsonify({'message': 'Not found'}), 404
 
 
+@admin_bp.route('/delete/man/<int:id>', methods=['DELETE'])
+@jwt_required()
+@role_required(['admin'])
+def delete_man(id):
+    man = User.query.filter_by(id=id).first()
+    if man:
+        db.session.delete(man)
+        db.session.commit()
+        return jsonify({'message': 'Deleted manager', 'resource': id}), 200
+    else:
+        return jsonify({'message': 'Not found'}), 404
+
+
 @admin_bp.route('/send/alert', methods=['GET', 'POST'])
 @jwt_required()
-@role_required(['admin', 'manager'])
+@role_required(['admin'])
 def send_alert():
     if request.method == 'GET':
         managers = User.query.filter_by(role='manager').all()

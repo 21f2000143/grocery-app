@@ -59,7 +59,6 @@ const RegisterCompo = {
           headers: {
             "Content-Type": "application/json",
             Accept: "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
           },
           body: JSON.stringify({
             email: this.email,
@@ -71,8 +70,8 @@ const RegisterCompo = {
         const data = await response.json();
         if (response.status === 201) {
           alert(data.message);
-          if (this.$route.path != "/login") {
-            this.$router.push("/login");
+          if (this.$route.path != "/app/login") {
+            this.$router.push("/app/login");
             this.closeCard();
           }
         } else if (response.status === 409) {

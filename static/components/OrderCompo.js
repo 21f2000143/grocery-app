@@ -24,19 +24,6 @@ const OrderCompo = {
   </div>
 </div>
     `,
-
-  data() {
-    return {
-      cartItems: [
-        { name: "Item 1", price: 10.99, quantity: 2 },
-        { name: "Item 2", price: 5.99, quantity: 3 },
-        { name: "Item 2", price: 5.99, quantity: 3 },
-        { name: "Item 2", price: 5.99, quantity: 3 },
-        { name: "Item 2", price: 5.99, quantity: 3 },
-        // Add more items as needed
-      ],
-    };
-  },
   methods: {
     async rate(id, value) {
       try {

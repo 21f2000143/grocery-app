@@ -89,20 +89,46 @@ const AdminApp = {
     };
   },
   methods: {
-    handleFileUpload(event) {
-      this.profilePic = event.target.files[0];
-    },
     home() {
       if (this.$route.path != "/app/admin") {
         this.$router.push("/app/admin");
-        this.$store.dispatch("fetchCategories");
       }
+    },
+    handleFileUpload(event) {
+      this.profilePic = event.target.files[0];
     },
     change() {
       if (this.picUpdate == false) {
         this.picUpdate = true;
       }
     },
+    async updatePic() {
+      const formData = new FormData();
+      formData.append("image", this.profilePic);
+      try {
+        const response = await fetch(
+          "http://127.0.0.1:5000/update/profile/" +
+            this.$store.state.authenticatedUser.id,
+          {
+            method: "PUT",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+            body: formData,
+          }
+        );
+        if (response.status === 201) {
+          const data = await response.json();
+          console.log(data.resource);
+          this.$store.commit("setAuthenticatedUser", data.resource);
+          this.picUpdate = false;
+        } else {
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error(error);
+      }
+    },    
     async searchByCat(catName, catId) {
       this.checkedValue = catId;
       try {
@@ -209,35 +235,7 @@ const AdminApp = {
       } catch (error) {
         console.error(error);
       }
-    },
-    async updatePic() {
-      const formData = new FormData();
-      formData.append("image", this.profilePic);
-      try {
-        const response = await fetch(
-          "http://127.0.0.1:5000/update/profile/" +
-            this.$store.state.authenticatedUser.id,
-          {
-            method: "PUT",
-            headers: {
-              "Content-type": "application/json",
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-            body: formData,
-          }
-        );
-        if (response.status === 201) {
-          const data = await response.json();
-          console.log(data.resource);
-          this.$store.commit("setAuthenticatedUser", data.resource);
-          this.picUpdate = false;
-        } else {
-          alert(data.message);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    },
+    }
   },
   mounted() {
     const source = new EventSource("/stream");

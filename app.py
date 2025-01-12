@@ -78,8 +78,6 @@ celery.conf.update(
     broker_connection_retry_on_startup=app.config[
         "BROKER_CONNECTION_RETRY_ON_STARTUP"]
 )
-celery.conf.timezone = 'Asia/Kolkata'
-
 
 celery.Task = workers.ContextTask
 app.app_context().push()
@@ -213,8 +211,8 @@ def search():
     return jsonify({"cat": categories_list, 'pro': product_list}), 200
 
 
-@main.route('/app/', defaults={'page': ''})
-@main.route('/app/<path:page>')
+@app.route('/app/', defaults={'page': ''})
+@app.route('/app/<path:page>')
 def index(page):
     return render_template('index.html')
 
@@ -313,7 +311,6 @@ def get_orders():
 
 @main.route('/add/to/cart', methods=['POST'])
 @jwt_required()
-@role_required(['admin', 'manager'])
 def add_to_cart():
     data = request.get_json()
     product_exist = Cart.query.filter_by(product_id=int(data['id'])).first()
@@ -987,19 +984,6 @@ def decline(id):
         req.status = 'declined'
         db.session.commit()
         return jsonify({'message': 'Request declined'}), 200
-    else:
-        return jsonify({'message': 'Not found'}), 404
-
-
-@auth.route('/delete/man/<int:id>', methods=['DELETE'])
-@jwt_required()
-@role_required(['admin'])
-def delete_man(id):
-    man = User.query.filter_by(id=id).first()
-    if man:
-        db.session.delete(man)
-        db.session.commit()
-        return jsonify({'message': 'Deleted manager', 'resource': id}), 200
     else:
         return jsonify({'message': 'Not found'}), 404
 

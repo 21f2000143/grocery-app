@@ -14,9 +14,6 @@ const ProductUserCompo = {
                 <button v-if="item.quantity>0" class="btn btn-outline-primary" @click="addToCart(item.id, item.name, item.rpu)">Add to cart</button>
                 <button v-else class="btn btn-danger" disabled>out of stock</button>
             </div>
-            <div v-if="item.avg_rate" class="card-footer">
-              <i v-for="n in item.avg_rate" :key="n" class="fas fa-star"></i>
-            </div>            
         </div>
     </div>
 </div>

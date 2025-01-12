@@ -28,53 +28,11 @@ const ManagersCompo = {
     </div>
   </div>
     `,
-  data() {
-    return {
-      email: "",
-      name: "",
-      password: "",
-      role: "",
-      message: "",
-    };
-  },
   methods: {
     warn() {
       if (this.$route.path != "/app/admin/warning") {
         this.$router.push("/app/admin/warning");
       }
-    },
-    submitForm() {
-      fetch("http://127.0.0.1:5000/signup", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          Accept: "application/json",
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({
-          email: this.email,
-          name: this.name,
-          password: this.password,
-          role: this.role,
-        }),
-      })
-        .then((response) => {
-          if (response.status == 200) {
-            if (this.$route.path != "/app/login") {
-              this.$router.push("/app/login");
-            }
-          }
-          if (response.status == 409) {
-            this.message = "User already exists";
-          }
-          return response.json();
-        })
-        .then((data) => {
-          console.log("Server response:", data);
-        })
-        .catch((error) => {
-          console.error("Error sending data:", error);
-        });
     },
     async deletemanager(id) {
       if (confirm("Are you sure?")) {

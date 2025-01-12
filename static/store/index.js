@@ -57,7 +57,6 @@ const store = new Vuex.Store({
     addNoti: (state, newNoti) => {
       state.notifications.push(newNoti);
     },
-
     // Mutation for updating a product
     updateCategory: (state, updatedCategory) => {
       const index = state.categories.findIndex(
@@ -132,25 +131,50 @@ const store = new Vuex.Store({
     // ... Repeat similar mutations for other arrays (cart, orders, notifications, categories)
   },
   actions: {
-    // Implement similar actions for other arrays (categories, notifications, etc.)
-
-    // Example action for updating a product
-    async updateProduct({ commit }, updatedProduct) {
-      // Perform API call to update product
-      // Example API call:
-      // await api.updateProduct(updatedProduct);
-      // After successful update, commit mutation to update state
-      // commit('updateProduct', updatedProduct);
+    async fetchCategories({ commit }) {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/get/categories", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        if (response.status === 200) {
+          const data = await response.json();
+          console.log(data, "categories fetched");
+          commit("setCategories", data);
+        } else {
+          const data = await response.json();
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     },
 
-    // Example action for deleting a product
-    async deleteProduct({ commit }, productId) {
-      // Perform API call to delete product
-      // Example API call:
-      // await api.deleteProduct(productId);
-      // After successful deletion, commit mutation to update state
-      // commit('deleteProduct', productId);
+    async fetchProducts({ commit }) {
+      try {
+        const response = await fetch("http://127.0.0.1:5000/get/products", {
+          method: "GET",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
+        if (response.status === 200) {
+          const data = await response.json();
+          console.log(data, "products fetched");
+          commit("setProducts", data);
+        } else {
+          const data = await response.json();
+          alert(data.message);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     },
+    
     async fetchOrders({ commit }) {
       try {
         const response = await fetch("http://127.0.0.1:5000/get/orders", {
@@ -193,27 +217,7 @@ const store = new Vuex.Store({
         console.error(error);
       }
     },
-    async fetchProducts({ commit }) {
-      try {
-        const response = await fetch("http://127.0.0.1:5000/get/products", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        if (response.status === 200) {
-          const data = await response.json();
-          console.log(data, "products fetched");
-          commit("setProducts", data);
-        } else {
-          const data = await response.json();
-          alert(data.message);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    },
+
     async fetchManagers({ commit }) {
       try {
         const response = await fetch("http://127.0.0.1:5000/get/all/managers", {
@@ -248,27 +252,6 @@ const store = new Vuex.Store({
           const data = await response.json();
           console.log(data, "categories fetched");
           commit("setNotifications", data.resource);
-        } else {
-          const data = await response.json();
-          alert(data.message);
-        }
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async fetchCategories({ commit }) {
-      try {
-        const response = await fetch("http://127.0.0.1:5000/get/categories", {
-          method: "GET",
-          headers: {
-            "Content-Type": "application/json",
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        });
-        if (response.status === 200) {
-          const data = await response.json();
-          console.log(data, "categories fetched");
-          commit("setCategories", data);
         } else {
           const data = await response.json();
           alert(data.message);
